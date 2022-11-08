@@ -1,8 +1,9 @@
 
 name: boum-api-python-sdk
+
 on:
   push:
-    tags:
+    branches:
       - '*'
 
 jobs:
