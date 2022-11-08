@@ -1,6 +1,8 @@
 # sdk
 Boum Python SDK
 
+Status: ![GitHub Actions](https://github.com/boum-garden/sdk/actions/workflows/main.yml/badge.svg)
+
 # To Do
 - [x] Basic POC of SDK
 - [x] Publish to test pypi
