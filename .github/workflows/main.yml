@@ -31,6 +31,7 @@ jobs:
           python -m pip install -r requirements.txt   
 
       - name: Build and publish Boum Python Package
+        run: |
           python setup.py sdist bdist_wheel --universal
           python -m twine upload --repository $PYPI_REPOSITORY dist/* --username $PYPI_USERNAME --password $PYPI_PASSWORD
 
