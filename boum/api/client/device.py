@@ -39,7 +39,7 @@ class DeviceMixin:
         """Allows admins and users to retrieve box details and history
         """
         headers = self._get_default_headers_with_auth()
-        url = "{}/device/{}".format(device_id)
+        url = "{}/device/{}".format(self._base_url, device_id)
         return self._handle_http_request(
             HttpMethods.GET, url, json=None, headers=headers
         ).json()
