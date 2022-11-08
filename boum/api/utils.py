@@ -20,36 +20,6 @@ class HttpStatusCodes:
 class ApiErrors:
     """Config class that collects all API error codes.
     """
-    INVALID_TOKEN_ERROR_MESSAGE = "Auth_InvalidToken"
-    EXPIRED_TOKEN_ERROR_MESSAGE = "Auth_ExpiredToken"
-
-class UserRoleCodes:
-    """Config class that collects all user roles.
-    """
-    ADMIN = 1000
-    PIPELINE = 900
-    COACH = 200
-    PLAYER = 100
-
-class UserRoleNames:
-    """Config class that collects all user roles.
-    """
-    ADMIN = "admin"
-    PIPELINE = "pipeline"
-    COACH = "coach"
-    PLAYER = "player"
-
-class SessionStatus:
-    """Config class collecting relevant session statuses.
-
-    Note: Session statuses are stored in our PostgreSQL database
-        and used to communicate the processing status to the user.
-
-    """
-    ANALYSING = 10100
-    UPLOADED = 10000
-    COMPLETED = 4
-    FAILED = 10
-    PENDING = 5100
-    EXCLUDED = 99 # deprecated, we are using a flag isExcluded now
+    INVALID_TOKEN_ERROR_MESSAGE = "InvalidToken"
+    EXPIRED_TOKEN_ERROR_MESSAGE = "ExpiredToken"
     
