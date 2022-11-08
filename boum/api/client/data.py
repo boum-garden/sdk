@@ -1,5 +1,34 @@
 #!/usr/bin/env python
 from boum.api.utils import HttpMethods
+from datetime import datetime
+
+def validate_time_start_and_end(value):
+    if isinstance(value, datetime):
+        return '{}Z'.format(value.isoformat().split('.')[0])
+    elif isinstance(value, str):
+        if value[0] == '-' and value[-1] in ['d', 'h', 'm']:
+            try:
+                int(value.strip('-')[0:-1])
+            except ValueError:
+                raise ValueError('Invalid time format')
+            return value
+        else:
+            raise ValueError('Invalid time format')
+    else:
+        raise ValueError('Invalid time format')
+
+def validate_interval(value):
+    if isinstance(value, str):
+        if value[-1] in ['d', 'h', 'm']:
+            try:
+                int(value[0:-1])
+            except ValueError:
+                raise ValueError('Invalid interval format')
+            return value
+        else:
+            raise ValueError('Invalid interval format')
+    else:
+        raise ValueError('Invalid interval format')
 
 class DataMixin:
     """Mixin including methods to call data related API endpoints.
@@ -15,11 +44,13 @@ class DataMixin:
         Returns:
             ...
         """
-        # TODO return a dataframe instead of json
-        # TODO validate time_start and time_end... can beiso formatted timestamps (2021-12-22T15:00:00Z) or -24h, -7d, -1m, -1y
+        interval = validate_interval(interval)
+        time_start = validate_time_start_and_end(time_start)
+        time_end = validate_time_start_and_end(time_end)        
         headers = self._get_default_headers_with_auth()
         url = "{}/device/data/{}?timeStart={}&interval={}".format(self._base_url, device_id, time_start, interval)
         if time_end:
             url += "&timeEnd={}".format(time_end)
+        # TODO return a dataframe instead of json
         return self._handle_http_request(HttpMethods.GET, url, headers=headers).json()
 
