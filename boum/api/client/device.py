@@ -143,13 +143,13 @@ class DeviceMixin:
             {
                 "state": {
                     "desired": {
-                        "maximumPumpDuration": maximum_pump_duration
+                        "maxPumpDuration": maximum_pump_duration
                     }
                 }
             }
         )
 
-    def set_maximum_pump_duration(self, device_id, refill_time='12:00'):
+    def set_refill_time(self, device_id, refill_time='12:00'):
         """Calls device endpoint to start the pump of a device
         """
         # TODO validation of refill_time
@@ -159,7 +159,7 @@ class DeviceMixin:
             {
                 "state": {
                     "desired": {
-                        "maximumPumpDuration": refill_time
+                        "refillTime": refill_time
                     }
                 }
             }
@@ -175,7 +175,7 @@ class DeviceMixin:
             {
                 "state": {
                     "desired": {
-                        "maximumPumpDuration": firmware_version
+                        "firmwareVersion": firmware_version
                     }
                 }
             }

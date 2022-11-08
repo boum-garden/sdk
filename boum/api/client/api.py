@@ -102,7 +102,7 @@ class Api(
         """
         url = self._base_url + "/auth/login"
         params = {'email': email, 'password': password}
-        result = self._handle_http_request(HttpMethods.GET, url, params=params)
+        result = self._handle_http_request(HttpMethods.POST, url, params=params)
         try:
             response = result.json()
             if result.ok and 'data' in response:
@@ -149,7 +149,7 @@ class Api(
         Returns:
             (:obj: `dict`): The auth header.
         """
-        headers = {'Authorization': "Bearer {}".format(self._access_token)}
+        headers = {'Authorization': '{}'.format(self._access_token)}
         headers.update(self.DEFAULT_HEADERS)
         return headers
 
@@ -185,14 +185,13 @@ class Api(
         """Method that creates a new accessToken using the refreshToken
         """
         url = self._base_url + "/auth/token"
-        params = {'refreshToken': self._refresh_token}
-
+        data = {'refreshToken': self._refresh_token}
         try:
-            response = self._perform_http_request(HttpMethods.GET, url, params=params)
+            response = self._perform_http_request(HttpMethods.POST, url, json=data)
             self._set_access_token(response.json()['data']['accessToken'])
             return
         except InvalidTokenException as ex:
-            self._raise_http_error(ex.message, HttpMethods.GET, url, None, params=params)
+            self._raise_http_error(ex.message, HttpMethods.GET, url, None)
 
     def _set_access_token(self, token):
         """Method to set the access token variable
