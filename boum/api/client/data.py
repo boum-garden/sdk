@@ -46,7 +46,8 @@ class DataMixin:
         """
         interval = validate_interval(interval)
         time_start = validate_time_start_and_end(time_start)
-        time_end = validate_time_start_and_end(time_end)        
+        if time_end:
+            time_end = validate_time_start_and_end(time_end)    
         headers = self._get_default_headers_with_auth()
         url = "{}/device/data/{}?timeStart={}&interval={}".format(self._base_url, device_id, time_start, interval)
         if time_end:
