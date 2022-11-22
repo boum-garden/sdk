@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from boum.api.utils import HttpMethods
+from boum.api_client.utils import HttpMethods
 
 
 class DeviceMixin:

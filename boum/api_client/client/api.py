@@ -3,9 +3,9 @@ import requests
 
 from requests import HTTPError
 
-from boum.api.exceptions import InvalidTokenException
-from boum.api.utils import HttpMethods, HttpStatusCodes, ApiErrors 
-from boum.api.config import DefaultConfig
+from boum.api_client.exceptions import InvalidTokenException
+from boum.api_client.utils import HttpMethods, HttpStatusCodes, ApiErrors
+from boum.api_client.config import DefaultConfig
 
 from .device import DeviceMixin
 from .data import DataMixin
