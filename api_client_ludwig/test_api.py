@@ -1,9 +1,9 @@
 import os
 import pytest
 
-from boum.api_client_ludwig.client.api import Api
-from boum.api_client_ludwig.config import DefaultConfig
-from boum.api_client_ludwig.utils import HttpStatusCodes
+from api_client_ludwig.client.api import Api
+from api_client_ludwig.config import DefaultConfig
+from api_client_ludwig.utils import HttpStatusCodes
 
 @pytest.yield_fixture(scope="function")
 def api_fixture():

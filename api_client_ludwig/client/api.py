@@ -3,9 +3,9 @@ import requests
 
 from requests import HTTPError
 
-from boum.api_client_ludwig.exceptions import InvalidTokenException
-from boum.api_client_ludwig.utils import HttpMethods, HttpStatusCodes, ApiErrors
-from boum.api_client_ludwig.config import DefaultConfig
+from api_client_ludwig.exceptions import InvalidTokenException
+from api_client_ludwig.utils import HttpMethods, HttpStatusCodes, ApiErrors
+from api_client_ludwig.config import DefaultConfig
 
 from .device import DeviceMixin
 from .data import DataMixin

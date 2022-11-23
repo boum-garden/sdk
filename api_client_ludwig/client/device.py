@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from boum.api_client_ludwig.utils import HttpMethods
+from api_client_ludwig.utils import HttpMethods
 
 
 class DeviceMixin:
