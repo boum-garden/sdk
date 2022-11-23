@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from boum.api.utils import HttpMethods
+from boum.api_client_ludwig.utils import HttpMethods
 
 class UserMixin:
     """Mixin including methods to call user related API endpoints.

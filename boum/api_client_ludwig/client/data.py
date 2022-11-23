@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from boum.api.utils import HttpMethods
+from boum.api_client_ludwig.utils import HttpMethods
 from datetime import datetime
 
 def validate_time_start_and_end(value):
