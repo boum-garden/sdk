@@ -1,14 +1,11 @@
 import functools
 from typing import Callable
 
-import requests
 import requests as requests
-from requests import Response
 
 
 class EndpointClient:
     _session: requests.Session | None
-
 
     def __init__(self, base_url: str, path: str):
         self._url = '/'.join(s.strip('/') for s in [base_url, path])
@@ -25,7 +22,7 @@ class EndpointClient:
 
     @session.setter
     def session(self, session: requests.Session):
-        self._session = session
+        EndpointClient._session = session
 
     @property
     def url(self):
@@ -47,16 +44,16 @@ class EndpointClient:
 
     @handle_response
     def _get(self):
-        return self._session.get(url=self._url)
+        return self.session.get(url=self._url)
 
     @handle_response
     def _post(self, payload: dict = None):
-        return self._session.post(url=self._url, json=payload)
+        return self.session.post(url=self._url, json=payload)
 
     @handle_response
     def _patch(self, payload: dict = None):
-        return self._session.patch(url=self._url, json=payload)
+        return self.session.patch(url=self._url, json=payload)
 
     @handle_response
     def _delete(self):
-        return self._session.delete(url=self._url)
+        return self.session.delete(url=self._url)
