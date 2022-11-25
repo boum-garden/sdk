@@ -1,29 +1,32 @@
 from unittest.mock import Mock
 
-from boum.api_client_v1.endpoint import EndpointClient
+from boum.api_client.endpoint import EndpointClient
 
 
 class EndpointClientAC(EndpointClient):
-    def __init__(self, base_url: str, path: str):
-        super().__init__(base_url, path)
+    def __init__(
+            self, base_url: str, path: str, parent: EndpointClient, resource_id: str | None = None):
+        super().__init__(base_url, path, parent, resource_id)
 
 
 class EndpointClientA(EndpointClient):
-    def __init__(self, base_url: str, path: str):
-        super().__init__(base_url, path)
-        self.c = EndpointClientAC(self._url, 'C')
+    def __init__(
+            self, base_url: str, path: str, parent: EndpointClient, resource_id: str | None = None):
+        super().__init__(base_url, path, parent, resource_id)
+        self.c = EndpointClientAC(self.url, 'C', self)
 
 
 class EndpointClientB(EndpointClient):
-    def __init__(self, base_url: str, path: str):
-        super().__init__(base_url, path)
+    def __init__(
+            self, base_url: str, path: str, parent: EndpointClient, resource_id: str | None = None):
+        super().__init__(base_url, path, parent, resource_id)
 
 
 class EndpointClientRoot(EndpointClient):
     def __init__(self, base_url: str, path: str):
-        super().__init__(base_url, path)
-        self.a = EndpointClientA(self._url, 'A')
-        self.b = EndpointClientB(self._url, 'B')
+        super().__init__(base_url, path, None)
+        self.a = EndpointClientA(self.url, 'A', self)
+        self.b = EndpointClientB(self.url, 'B', self)
 
 
 def test__create__urls_are_correct():

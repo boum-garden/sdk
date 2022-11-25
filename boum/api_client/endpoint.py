@@ -7,14 +7,17 @@ import requests as requests
 class EndpointClient:
     _session: requests.Session | None
 
-    def __init__(self, base_url: str, path: str):
-        self._url = '/'.join(s.strip('/') for s in [base_url, path])
-        self._resource_id: str | None = None
+    def __init__(
+            self, base_url: str, path: str, parent: "EndpointClient | None",
+            resource_id: str | None = None):
+        self._base_url = base_url
+        self._path = path
+        self.resource_id = resource_id
+        self.url = '/'.join(s.strip('/') for s in [base_url, path, resource_id] if s)
+        self._parent = parent
 
     def __call__(self, resource_id: str):
-        # TODO: check that resource id is valid
-        self._resource_id = resource_id
-        return self
+        return type(self)(self._base_url, self._path, self._parent, resource_id)
 
     @property
     def session(self):
@@ -23,10 +26,6 @@ class EndpointClient:
     @session.setter
     def session(self, session: requests.Session):
         EndpointClient._session = session
-
-    @property
-    def url(self):
-        return self._url if not self._resource_id else '/'.join([self._url, self._resource_id])
 
     @property
     def endpoints(self) -> list["EndpointClient"]:
