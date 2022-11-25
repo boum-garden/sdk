@@ -44,16 +44,16 @@ class EndpointClient:
 
     @handle_response
     def _get(self):
-        return self.session.get(url=self._url)
+        return self.session.get(url=self.url)
 
     @handle_response
     def _post(self, payload: dict = None):
-        return self.session.post(url=self._url, json=payload)
+        return self.session.post(url=self.url, json=payload)
 
     @handle_response
     def _patch(self, payload: dict = None):
-        return self.session.patch(url=self._url, json=payload)
+        return self.session.patch(url=self.url, json=payload)
 
     @handle_response
     def _delete(self):
-        return self.session.delete(url=self._url)
+        return self.session.delete(url=self.url)

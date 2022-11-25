@@ -2,9 +2,8 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DesiredDeviceState:
-    firmwareVersion: str | None
-    refillTime: str | None
-    maxPumpDuration: str | None
-    pumpState: str | None
+class DeviceState:
+    refill_time: str | None = None
+    max_pump_duration: str | None = None
+    pump_state: str | None = None
 
