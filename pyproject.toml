@@ -18,6 +18,7 @@ requests = "^2.28.1"
 pytest = "^7.2.0"
 pylint = "^2.15.6"
 bumpver = "^2022.1119"
+pytest-rerunfailures = "^10.3"
 
 
 [tool.bumpver]

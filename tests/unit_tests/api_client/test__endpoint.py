@@ -1,12 +1,8 @@
-from unittest.mock import Mock
-
 from boum.api_client.endpoint import EndpointClient
 
 
 class EndpointClientAC(EndpointClient):
-    def __init__(
-            self, base_url: str, path: str, parent: EndpointClient, resource_id: str | None = None):
-        super().__init__(base_url, path, parent, resource_id)
+    pass
 
 
 class EndpointClientA(EndpointClient):
@@ -17,9 +13,7 @@ class EndpointClientA(EndpointClient):
 
 
 class EndpointClientB(EndpointClient):
-    def __init__(
-            self, base_url: str, path: str, parent: EndpointClient, resource_id: str | None = None):
-        super().__init__(base_url, path, parent, resource_id)
+    pass
 
 
 class EndpointClientRoot(EndpointClient):
@@ -40,15 +34,28 @@ def test__create__urls_are_correct():
     assert root.a('3').c('4').url == 'base/A/3/C/4'
 
 
-def test__set_session__all_endpoints_have_session():
+def test__connect_root__all_endpoints_are_connected():
     root = EndpointClientRoot('base', '/')
-    session = Mock()
-    root.session = session
+    root.connect()
 
-    assert root.session is session
-    assert root.a.session is session
-    assert root.a.c.session is session
-    assert root.b.session is session
-    assert root.a('1').session is session
-    assert root.a.c('2').session is session
-    assert root.b('3').session is session
+    assert root.is_connected()
+    assert root.a.is_connected()
+    assert root.a.c.is_connected()
+    assert root.b.is_connected()
+    assert root.a('1').is_connected()
+    assert root.a.c('2').is_connected()
+    assert root.b('3').is_connected()
+
+
+def test__disconnect_root__all_endpoints_are_disconnected():
+    root = EndpointClientRoot('base', '/')
+    root.connect()
+    root.disconnect()
+
+    assert not root.is_connected()
+    assert not root.a.is_connected()
+    assert not root.a.c.is_connected()
+    assert not root.b.is_connected()
+    assert not root.a('1').is_connected()
+    assert not root.a.c('2').is_connected()
+    assert not root.b('3').is_connected()

@@ -26,30 +26,30 @@ The package is available on PyPI, and can be installed with pip or similar tools
 ### API Client
 
 The API client models the topology of the API and provides a class hierarchy that is organized in the same way as the 
-endpoint paths.
-
-Sign in with email and password is required to use the API.
+endpoint paths. Email and password are required to use it.
 
 ```python
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models import DeviceState
 
-client = ApiClient()
-with client("email", "password"):
+with ApiClient("email", "password") as client:
     
     # Get call to the devices collection
-    device = client.endpoints.devices.get()
+    device_ids = client.endpoints.devices.get()
     
     # Get call to a specific device 
-    device = client.endpoints.devices('device_id').get()
+    device_states = client.endpoints.devices('device_id').get()
     
     # Patch call to a specific device
-    device = client.endpoints.devices('device_id').patch(DeviceState())
+    client.endpoints.devices('device_id').patch(DeviceState())
     
-    # Get call to the devices data
+    # Get call to a devices data
     data = client.endpoints.devices('device_id').data.get()
     
 ```
+
+Note that it is not possible to use multiple instances of the client at the same time. The client is a singleton and
+will raise an exception if you try to instantiate it more than once.
 
 
 ### Abstractions
