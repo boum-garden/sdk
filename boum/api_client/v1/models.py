@@ -1,30 +1,39 @@
 from dataclasses import dataclass
-from datetime import time
+from datetime import time, datetime
+
+TIME_FORMAT = '%H:%M'
 
 
 @dataclass
 class DeviceState:
-    refill_times: list[time] | None = None
+    refill_time: time | None = None
     max_pump_duration: str | None = None
     pump_state: bool | None = None
 
+
     @staticmethod
     def from_payload(payload: dict[str, str]) -> 'DeviceState':
-        refill_times = payload.get('refillTime')
-        max_pump_duration = payload.get('maxPumpDuration')
-        pump_state = payload.get('pumpState')
+        pump_state_str = payload['pumpState']
+        match pump_state_str:
+            case 'on':
+                pump_state = True
+            case 'off':
+                pump_state = False
+            case _:
+                raise ValueError(f'Unknown pump state {pump_state_str}')
+
         return DeviceState(
-            refill_times=payload['refillTime'],
+            refill_time=datetime.strptime(payload['refillTime'], TIME_FORMAT).time(),
             max_pump_duration=payload['maxPumpDuration'],
-            pump_state=payload['pumpState']
+            pump_state=pump_state
         )
 
     def to_payload(self) -> dict[str, str]:
         payload = {}
-        if self.refill_times is not None:
-            payload['refillTime'] = self.refill_times
+        if self.refill_time is not None:
+            payload['refillTime'] = self.refill_time.strftime('%H:%M')
         if self.max_pump_duration is not None:
             payload['maxPumpDuration'] = self.max_pump_duration
         if self.pump_state is not None:
-            payload['pumpState'] = 'ON' if self.pump_state else 'OFF'
+            payload['pumpState'] = 'on' if self.pump_state else 'off'
         return payload

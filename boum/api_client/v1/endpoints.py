@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from boum.api_client.endpoint import EndpointClient
 from boum.api_client.v1.models import DeviceState
 
@@ -20,11 +22,18 @@ class AuthEndpointClient(EndpointClient):
 
 
 class DevicesDataEndpointClient(EndpointClient):
+    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
-    def get(self):
+    def get(self, start: datetime = None, end: datetime = None):
         if not self._parent.resource_id:
             raise ValueError('Cannot get data for a collection of devices')
-        response = self._get()
+        query_parameters = {}
+        if start:
+            query_parameters['timeStart'] = start.strftime(self.DATETIME_FORMAT)
+        if end:
+            query_parameters['timeEnd'] = end.strftime(self.DATETIME_FORMAT)
+
+        response = self._get(query_parameters=query_parameters)
         return response.json()['data']['timeSeries']
 
 

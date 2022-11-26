@@ -50,17 +50,17 @@ class EndpointClient:
         return wrapper
 
     @handle_response
-    def _get(self):
-        return self._session.get(url=self.url)
+    def _get(self, query_parameters: dict = None):
+        return self._session.get(url=self.url, params=query_parameters)
 
     @handle_response
-    def _post(self, payload: dict = None):
-        return self._session.post(url=self.url, json=payload)
+    def _post(self, payload: dict = None, query_parameters: dict = None):
+        return self._session.post(url=self.url, json=payload, params=query_parameters)
 
     @handle_response
-    def _patch(self, payload: dict = None):
-        return self._session.patch(url=self.url, json=payload)
+    def _patch(self, payload: dict = None, query_parameters: dict = None):
+        return self._session.patch(url=self.url, json=payload, params=query_parameters)
 
     @handle_response
-    def _delete(self):
-        return self._session.delete(url=self.url)
+    def _delete(self, query_parameters: dict = None):
+        return self._session.delete(url=self.url, params=query_parameters)

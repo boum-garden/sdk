@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from boum.api_client.v1 import constants
@@ -87,6 +89,15 @@ class TestDevicesDataEndpointGet:
         with client:
             device_id = client.endpoints.devices.get()[0]
             data = client.endpoints.devices(device_id).data.get()
+            for k, v in data.items():
+                assert isinstance(k, str)
+                assert isinstance(v, list)
+
+    def test__with_time_restrictions__returns_data(self, client):
+        with client:
+            device_id = client.endpoints.devices.get()[0]
+            start, end = datetime.today().date(), datetime.now()
+            data = client.endpoints.devices(device_id).data.get(start=start, end=end)
             for k, v in data.items():
                 assert isinstance(k, str)
                 assert isinstance(v, list)

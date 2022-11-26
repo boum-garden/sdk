@@ -38,13 +38,13 @@ with ApiClient("email", "password") as client:
     device_ids = client.endpoints.devices.get()
     
     # Get call to a specific device 
-    device_states = client.endpoints.devices('device_id').get()
+    device_states = client.endpoints.devices(device_ids[0]).get()
     
     # Patch call to a specific device
-    client.endpoints.devices('device_id').patch(DeviceState())
+    client.endpoints.devices(device_ids[0]).patch(DeviceState())
     
     # Get call to a devices data
-    data = client.endpoints.devices('device_id').data.get()
+    data = client.endpoints.devices(device_ids[0]).data.get()
     
 ```
 
@@ -67,7 +67,7 @@ with ApiClient("email", "password") as client:
     device_ids = Device.get_device_ids(client)
 
     # Create a device instance
-    device = Device('device_id', client)
+    device = Device(device_ids[0], client)
 
     # Set the pump state
     device.pump_state = True  # True for on, False for off

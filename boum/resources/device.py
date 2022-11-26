@@ -47,14 +47,14 @@ class Device:
         self._set_desired_device_state(desired_device_state)
 
     @property
-    def refill_times(self) -> list[time]:
+    def refill_time(self) -> list[time]:
         """Get or set the pump/refill times for a device (`list[time]`)
         """
-        return self._get_reported_device_state().refill_times
+        return self._get_reported_device_state().refill_time
 
-    @refill_times.setter
-    def refill_times(self, value: list[time]):
-        desired_device_state = DeviceState(refill_times=value)
+    @refill_time.setter
+    def refill_time(self, value: list[time]):
+        desired_device_state = DeviceState(refill_time=value)
         self._set_desired_device_state(desired_device_state)
 
     def get_telemetry_data(self, start: datetime = None, end: datetime = None) -> dict[str, list]:
