@@ -60,30 +60,29 @@ The resource abstractions provide an intuitive interface to interact with the un
 from boum.api_client.v1.client import ApiClient
 from boum.resources.device import Device
 from datetime import time
+import pandas as pd
 
 with ApiClient("email", "password") as client:
-    
     # Get available device ids
     device_ids = Device.get_device_ids(client)
-    
+
     # Create a device instance
     device = Device('device_id', client)
-    
+
     # Set the pump state
-    device.pump_state = True # True for on, False for off
-    
+    device.pump_state = True  # True for on, False for off
+
     # Set the refill times
-    desired_refill_times = [
-        time(8, 0),
-        time(12, 0),
-    ]
-    device.refill_times = desired_refill_times
-    
+    device.refill_time = time(8, 0)
+
     # Get the refill times
-    current_refill_times = device.refill_times
-    
+    current_refill_times = device.refill_time
+
     # Get device telemetry data
     data = device.get_telemetry_data()
+    
+    # Convert telemetry data to pandas dataframe
+    pd.DataFrame(data)
 ```
 
 
