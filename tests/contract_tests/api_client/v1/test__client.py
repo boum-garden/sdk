@@ -1,6 +1,6 @@
 import pytest
 
-from boum import constants
+from boum.api_client.v1 import constants
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models import DeviceState
 

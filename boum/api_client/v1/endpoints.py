@@ -47,29 +47,15 @@ class DevicesEndpointClient(EndpointClient):
         if not self.resource_id:
             return [d['id'] for d in data]
 
-        desired_device_state = DeviceState(
-            refill_time=data['desired']['refillTime'],
-            max_pump_duration=data['desired']['maxPumpDuration'],
-            pump_state=data['desired']['pumpState']
-        )
-        reported_device_state = DeviceState(
-            refill_time=data['reported']['refillTime'],
-            max_pump_duration=data['reported']['maxPumpDuration'],
-            pump_state=data['reported']['pumpState']
-        )
+        desired_device_state = DeviceState.from_payload(data['desired'])
+        reported_device_state = DeviceState.from_payload(data['reported'])
         return desired_device_state, reported_device_state
 
     def patch(self, desired_device_state: DeviceState):
         if not self.resource_id:
             raise ValueError('Cannot patch a collection of devices')
 
-        payload = {}
-        if desired_device_state.max_pump_duration is not None:
-            payload['maxPumpDuration'] = desired_device_state.max_pump_duration
-        if desired_device_state.refill_time is not None:
-            payload['refillTime'] = desired_device_state.refill_time
-        if desired_device_state.pump_state is not None:
-            payload['pumpState'] = desired_device_state.pump_state
+        payload = desired_device_state.to_payload()
 
         self._patch(payload)
 

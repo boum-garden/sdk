@@ -52,14 +52,45 @@ Note that it is not possible to use multiple instances of the client at the same
 will raise an exception if you try to instantiate it more than once.
 
 
-### Abstractions
+### Resource Abstractions
 
-Todo
+The resource abstractions provide an intuitive interface to interact with the underlying resources.
+
+```python
+from boum.api_client.v1.client import ApiClient
+from boum.resources.device import Device
+from datetime import time
+
+with ApiClient("email", "password") as client:
+    
+    # Get available device ids
+    device_ids = Device.get_device_ids(client)
+    
+    # Create a device instance
+    device = Device('device_id', client)
+    
+    # Set the pump state
+    device.pump_state = True # True for on, False for off
+    
+    # Set the refill times
+    desired_refill_times = [
+        time(8, 0),
+        time(12, 0),
+    ]
+    device.refill_times = desired_refill_times
+    
+    # Get the refill times
+    current_refill_times = device.refill_times
+    
+    # Get device telemetry data
+    data = device.get_telemetry_data()
+```
 
 
 ## Development
 
 ### Dependecy management
+
 [Poetry](https://python-poetry.org/) is used for depency management and publishing flow.
 
 

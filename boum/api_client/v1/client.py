@@ -1,4 +1,4 @@
-from boum import constants
+from boum.api_client.v1 import constants
 from boum.api_client.v1.endpoints import RootEndpointClient
 
 
