@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "boum"
-version = "0.1.4"
+version = "0.2.0"
 description = "SDK to interact with the boum API"
 authors = ["Marc Pfander <marc.pfander@boum.garden>"]
 readme = "README.md"
@@ -23,7 +23,7 @@ pandas = "^1.5.2"
 
 
 [tool.bumpver]
-current_version = "0.1.4"
+current_version = "0.2.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
