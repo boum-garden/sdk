@@ -7,6 +7,9 @@ from boum.api_client.v1.models import DeviceState
 class AuthTokenEndpointClient(EndpointClient):
 
     def post(self, refresh_token: str):
+        if not isinstance(refresh_token, str):
+            raise ValueError('refresh_token must be a string')
+
         payload = {'refreshToken': refresh_token}
         response = self._post(payload)
         data = response.json()['data']
@@ -27,6 +30,11 @@ class DevicesDataEndpointClient(EndpointClient):
     def get(self, start: datetime = None, end: datetime = None):
         if not self._parent.resource_id:
             raise ValueError('Cannot get data for a collection of devices')
+        if start is not None and not isinstance(start, datetime):
+            raise ValueError('start must be a datetime')
+        if end is not None and not isinstance(end, datetime):
+            raise ValueError('end must be a datetime')
+
         query_parameters = {}
         if start:
             query_parameters['timeStart'] = start.strftime(self.DATETIME_FORMAT)
@@ -63,6 +71,8 @@ class DevicesEndpointClient(EndpointClient):
     def patch(self, desired_device_state: DeviceState):
         if not self.resource_id:
             raise ValueError('Cannot patch a collection of devices')
+        if not isinstance(desired_device_state, DeviceState):
+            raise ValueError('desired_device_state must be a DeviceState')
 
         payload = desired_device_state.to_payload()
 
@@ -77,6 +87,11 @@ class DevicesEndpointClient(EndpointClient):
 class AuthSigninEndpointClient(EndpointClient):
 
     def post(self, email: str, password: str):
+        if not isinstance(email, str):
+            raise ValueError('email must be a string')
+        if not isinstance(password, str):
+            raise ValueError('password must be a string')
+
         payload = {'email': email, 'password': password}
         response = self._post(payload)
         data = response.json()['data']
