@@ -1,11 +1,12 @@
 import functools
 from typing import Callable
 
-import requests as requests
+import requests
 
 
 class EndpointClient:
-    _session: requests.Session | None
+    _session: requests.Session | None = None
+    _headers: dict[str, str] = {}
 
     def __init__(
             self, base_url: str, path: str, parent: "EndpointClient | None",
@@ -19,17 +20,24 @@ class EndpointClient:
     def __call__(self, resource_id: str):
         return type(self)(self._base_url, self._path, self._parent, resource_id)
 
-    @property
-    def session(self):
-        return self._session
+    @classmethod
+    def connect(cls):
+        EndpointClient._session = requests.Session()
+        EndpointClient._session.headers = cls._headers
 
-    @session.setter
-    def session(self, session: requests.Session):
-        EndpointClient._session = session
+    @classmethod
+    def disconnect(cls):
+        EndpointClient._session.close()
+        EndpointClient._session = None
 
-    @property
-    def endpoints(self) -> list["EndpointClient"]:
-        return [v for v in vars(self).values() if issubclass(type(v), EndpointClient)]
+    @classmethod
+    def is_connected(cls):
+        return cls._session is not None
+
+    @classmethod
+    def set_access_token(cls, access_token: str):
+        auth_header = {'Authorization': f'{access_token}'}
+        EndpointClient._headers.update(auth_header)
 
     @staticmethod
     def handle_response(func: Callable[..., requests.Response]):
@@ -43,16 +51,16 @@ class EndpointClient:
 
     @handle_response
     def _get(self):
-        return self.session.get(url=self.url)
+        return self._session.get(url=self.url)
 
     @handle_response
     def _post(self, payload: dict = None):
-        return self.session.post(url=self.url, json=payload)
+        return self._session.post(url=self.url, json=payload)
 
     @handle_response
     def _patch(self, payload: dict = None):
-        return self.session.patch(url=self.url, json=payload)
+        return self._session.patch(url=self.url, json=payload)
 
     @handle_response
     def _delete(self):
-        return self.session.delete(url=self.url)
+        return self._session.delete(url=self.url)

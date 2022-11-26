@@ -3,9 +3,6 @@ from boum.api_client.v1.models import DeviceState
 
 
 class AuthTokenEndpointClient(EndpointClient):
-    def __init__(
-            self, base_url: str, path: str, parent: EndpointClient):
-        super().__init__(base_url, path, parent)
 
     def post(self, refresh_token: str):
         payload = {'refreshToken': refresh_token}
@@ -23,9 +20,6 @@ class AuthEndpointClient(EndpointClient):
 
 
 class DevicesDataEndpointClient(EndpointClient):
-    def __init__(
-            self, base_url: str, path: str, parent: EndpointClient):
-        super().__init__(base_url, path, parent)
 
     def get(self):
         if not self._parent.resource_id:
@@ -86,9 +80,6 @@ class DevicesEndpointClient(EndpointClient):
 
 
 class AuthSigninEndpointClient(EndpointClient):
-    def __init__(
-            self, base_url: str, path: str, parent: EndpointClient):
-        super().__init__(base_url, path, parent)
 
     def post(self, email: str, password: str):
         payload = {'email': email, 'password': password}
@@ -103,5 +94,3 @@ class RootEndpointClient(EndpointClient):
         super().__init__(base_url, path, None)
         self.devices = DevicesEndpointClient(self.url, 'devices', self)
         self.auth = AuthEndpointClient(self.url, 'auth', self)
-
-
