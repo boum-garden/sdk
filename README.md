@@ -41,8 +41,7 @@ endpoint paths. Email and password are required to use it.
 
 ```
 
-Note that it is not possible to use multiple instances of the client at the same time. The client is a singleton and
-will raise an exception if you try to instantiate it more than once.
+Note that it is not possible to use multiple instances of the client at the same time.
 
 
 ### Resource Abstractions
