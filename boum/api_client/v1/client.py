@@ -46,6 +46,7 @@ class ApiClient:
                 The URL of the API. Defaults to the production API.
         """
 
+        ApiClient._instance = self
         self.root = RootEndpointClient(host_url, 'v1', self._refresh_access_token)
         self._email = email
         self._password = password
