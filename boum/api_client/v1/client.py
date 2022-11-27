@@ -20,16 +20,17 @@ class ApiClient:
         >>> from boum.api_client import constants
         >>> from boum.api_client.v1.endpoints import RootEndpointClient
         >>> from boum.api_client.v1.models import DeviceState
+        >>> from boum.api_client.v1.client import ApiClient
         >>>
-        >>> with ApiClient("email", "password") as client:
-        >>>     # Get call to the devices collection
-        >>>     device_ids = client.root.devices.get()
-        >>>     # Get call to a specific device
-        >>>     device_states = client.root.devices(device_ids[0]).get()
-        >>>     # Patch call to a specific device
-        >>>     client.root.devices(device_ids[0]).patch(DeviceState())
-        >>>     # Get call to a devices data
-        >>>     data = client.root.devices(device_ids[0]).data.get()
+        >>> with ApiClient(email, password) as client:
+        ...     # Get call to the devices collection
+        ...     device_ids = client.root.devices.get()
+        ...     # Get call to a specific device
+        ...     device_states = client.root.devices(device_ids[0]).get()
+        ...     # Patch call to a specific device
+        ...     client.root.devices(device_ids[0]).patch(DeviceState())
+        ...     # Get call to a devices data
+        ...     data = client.root.devices(device_ids[0]).data.get()
     """
 
     def __init__(
