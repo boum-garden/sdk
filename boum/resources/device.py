@@ -5,15 +5,41 @@ from boum.api_client.v1.models import DeviceState
 
 
 class Device:
-    """Abstration over the api client to easily interact with devices."""
+    """
+    Abstration over the api client to easily interact with devices.
+
+    Example
+    -------
+    >>> from datetime import time, datetime, timedelta
+    >>> import pandas as pd
+    >>> from boum.api_client.v1.client import ApiClient
+    >>> from boum.resources.device import Device
+    >>>
+    >>> with ApiClient(email, password) as client:
+    ...    # Get available device ids
+    ...    device_ids = Device.get_device_ids(client)
+    ...    # Create a device instance
+    ...    device = Device(device_ids[0], client)
+    ...    # Set the pump state
+    ...    device.pump_state = True  # True for on, False for off
+    ...    # Set the refill times
+    ...    device.refill_time = time(8, 0)
+    ...    # Get the refill times
+    ...    current_refill_times = device.refill_time
+    ...    # Get device telemetry data
+    ...    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1),
+    ...        end=datetime.now())
+    ...    # Convert telemetry data to pandas dataframe
+    ...    df = pd.DataFrame(data)
+    """
 
     def __init__(self, device_id: str, api_client: ApiClient):
         """
         Parameters
         ----------
-            device_id: str
+            device_id
                 The device id
-            api_client: ApiClient
+            api_client
                 The api client that handles the interaction with the api
         """
         self.device_id = device_id
@@ -25,7 +51,7 @@ class Device:
 
         Parameters
         ----------
-            api_client: ApiClient
+            api_client
                 The api client that handles the interaction with the api
 
         Returns
@@ -68,9 +94,9 @@ class Device:
 
         Parameters
         ----------
-            start: datetime
+            start
                 The start date of the telemetry data
-            end: datetime
+            end
                 The end date of the telemetry data
 
         Returns

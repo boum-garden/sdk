@@ -1,13 +1,22 @@
-from datetime import datetime
+import doctest
+from datetime import datetime, timedelta
 
 import pytest
 
+import boum.api_client.v1.client
 from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models import DeviceState
+from tests.contract_tests.fixtures import EMAIL, PASSWORD
 
-EMAIL = 'ludwig.auer@gmail.com'
-PASSWORD = 'Test1234'
+
+def test__docstrings():
+    execution_context = {
+        'email': EMAIL,
+        'password': PASSWORD,
+    }
+    doctest.testmod(
+        boum.api_client.v1.client, raise_on_error=True, verbose=True, globs=execution_context)
 
 
 @pytest.fixture
@@ -34,6 +43,7 @@ class TestAuthEndpoints:
 
 
 class TestDevicesEndpointPost:
+
     def test__with_device_id__raises_value_error(self, client):
         with client:
             with pytest.raises(ValueError):
@@ -96,7 +106,7 @@ class TestDevicesDataEndpointGet:
     def test__with_time_restrictions__returns_data(self, client):
         with client:
             device_id = client.root.devices.get()[0]
-            start, end = datetime.today().date(), datetime.now()
+            start, end = datetime.now() - timedelta(days=1), datetime.now()
             data = client.root.devices(device_id).data.get(start=start, end=end)
             for k, v in data.items():
                 assert isinstance(k, str)

@@ -23,21 +23,22 @@ The API client models the topology of the API and provides a class hierarchy tha
 endpoint paths. Email and password are required to use it.
 
 ```python
-from boum.api_client.v1.client import ApiClient
-from boum.api_client.v1.models import DeviceState
+>>> from boum.api_client.v1.client import ApiClient
+>>> from boum.api_client.v1.models import DeviceState
+>>> 
+>>> with ApiClient(email, password) as client:
+...    # Get call to the devices collection
+...    device_ids = client.root.devices.get()
+...
+...    # Get call to a specific device 
+...    device_states = client.root.devices(device_ids[0]).get()
+...
+...    # Patch call to a specific device
+...    client.root.devices(device_ids[0]).patch(DeviceState())
+...
+...    # Get call to a devices data
+...    data = client.root.devices(device_ids[0]).data.get()
 
-with ApiClient("email", "password") as client:
-    # Get call to the devices collection
-    device_ids = client.root.devices.get()
-
-    # Get call to a specific device 
-    device_states = client.root.devices(device_ids[0]).get()
-
-    # Patch call to a specific device
-    client.root.devices(device_ids[0]).patch(DeviceState())
-
-    # Get call to a devices data
-    data = client.root.devices(device_ids[0]).data.get()
 ```
 
 Note that it is not possible to use multiple instances of the client at the same time. The client is a singleton and
@@ -48,32 +49,33 @@ will raise an exception if you try to instantiate it more than once.
 The resource abstractions provide an intuitive interface to interact with the underlying resources.
 
 ```python
-from datetime import time, datetime, timedelta
-import pandas as pd
-from boum.api_client.v1.client import ApiClient
-from boum.resources.device import Device
+>>> from datetime import time, datetime, timedelta
+>>> import pandas as pd
+>>> from boum.api_client.v1.client import ApiClient
+>>> from boum.resources.device import Device
 
-with ApiClient("email", "password") as client:
-    # Get available device ids
-    device_ids = Device.get_device_ids(client)
+>>> with ApiClient(email, password) as client:
+...    # Get available device ids
+...    device_ids = Device.get_device_ids(client)
+...
+...    # Create a device instance
+...    device = Device(device_ids[0], client)
+...
+...    # Set the pump state
+...    device.pump_state = True  # True for on, False for off
+...
+...    # Set the refill times
+...    device.refill_time = time(8, 0)
+...
+...    # Get the refill times
+...    current_refill_times = device.refill_time
+...
+...    # Get device telemetry data
+...    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1), end=datetime.now())
+...    
+...    # Convert telemetry data to pandas dataframe
+...    df = pd.DataFrame(data)
 
-    # Create a device instance
-    device = Device(device_ids[0], client)
-
-    # Set the pump state
-    device.pump_state = True  # True for on, False for off
-
-    # Set the refill times
-    device.refill_time = time(8, 0)
-
-    # Get the refill times
-    current_refill_times = device.refill_time
-
-    # Get device telemetry data
-    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1), end=datetime.now())
-    
-    # Convert telemetry data to pandas dataframe
-    pd.DataFrame(data)
 ```
 
 
