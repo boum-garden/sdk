@@ -33,6 +33,8 @@ class ApiClient:
         ...     data = client.root.devices(device_ids[0]).data.get()
     """
 
+    _instance: "ApiClient" = None
+
     def __init__(
             self, email: str, password: str, host_url: str = constants.API_URL_PROD, ):
         """
@@ -46,6 +48,9 @@ class ApiClient:
                 The URL of the API. Defaults to the production API.
         """
 
+        if ApiClient._instance:
+            raise AttributeError('Only one instance of ApiClient is allowed')
+        ApiClient._instance = self
         self.root = RootEndpointClient(host_url, 'v1', self._refresh_access_token)
         self._email = email
         self._password = password
