@@ -17,19 +17,19 @@ class ApiClient:
 
     Example
     -------
+        >>> from boum.api_client import constants
+        >>> from boum.api_client.v1.endpoints import RootEndpointClient
+        >>> from boum.api_client.v1.models import DeviceState
+        >>>
         >>> with ApiClient("email", "password") as client:
-        >>>
-        >>> # Get call to the devices collection
-        >>> device_ids = client.root.devices.get()
-        >>>
-        >>> # Get call to a specific device
-        >>> device_states = client.root.devices(device_ids[0]).get()
-        >>>
-        >>> # Patch call to a specific device
-        >>> client.root.devices(device_ids[0]).patch(DeviceState())
-        >>>
-        >>> # Get call to a devices data
-        >>> data = client.root.devices(device_ids[0]).data.get()
+        >>>     # Get call to the devices collection
+        >>>     device_ids = client.root.devices.get()
+        >>>     # Get call to a specific device
+        >>>     device_states = client.root.devices(device_ids[0]).get()
+        >>>     # Patch call to a specific device
+        >>>     client.root.devices(device_ids[0]).patch(DeviceState())
+        >>>     # Get call to a devices data
+        >>>     data = client.root.devices(device_ids[0]).data.get()
     """
 
     def __init__(
@@ -45,7 +45,7 @@ class ApiClient:
                 The URL of the API. Defaults to the production API.
         """
 
-        self.root = RootEndpointClient(host_url, 'v1')
+        self.root = RootEndpointClient(host_url, 'v1', self._refresh_access_token)
         self._email = email
         self._password = password
         self._refresh_token = ''

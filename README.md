@@ -48,10 +48,10 @@ will raise an exception if you try to instantiate it more than once.
 The resource abstractions provide an intuitive interface to interact with the underlying resources.
 
 ```python
+from datetime import time, datetime, timedelta
+import pandas as pd
 from boum.api_client.v1.client import ApiClient
 from boum.resources.device import Device
-from datetime import time
-import pandas as pd
 
 with ApiClient("email", "password") as client:
     # Get available device ids
@@ -70,7 +70,7 @@ with ApiClient("email", "password") as client:
     current_refill_times = device.refill_time
 
     # Get device telemetry data
-    data = device.get_telemetry_data()
+    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1), end=datetime.now())
     
     # Convert telemetry data to pandas dataframe
     pd.DataFrame(data)
