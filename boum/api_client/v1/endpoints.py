@@ -33,7 +33,7 @@ class EndpointClient(ABC):
     _session: requests.Session | None = None
     _headers: dict[str, str] = {}
     _refresh_access_token: Callable[[], None] = None
-    _access_token_issue_prefix = 'Access token'
+    _access_token_expired_message = 'AccessTokenExpired'
 
     def __init__(
             self, base_url: str, path: str, parent:
@@ -98,7 +98,7 @@ class EndpointClient(ABC):
             response = func(self, *args, **kwargs)
 
             if response.status_code == 401 \
-                    and str.startswith(response.json()['message'], self._access_token_issue_prefix):
+                    and self._access_token_expired_message == response.json()['message']:
                 logging.info('Access token expired. Refreshing...')
                 self._refresh_access_token()
                 logging.info('Access token refreshed. Retrying request...')

@@ -1,0 +1,6 @@
+import os
+
+EMAIL = os.environ['BOUM_SDK_TEST_EMAIL']
+PASSWORD = os.environ['BOUM_SDK_TEST_PASSWORD']
+DEVICE_ID = os.environ['BOUM_SDK_TEST_DEVICE_ID']
+BASE_URL = os.environ['BOUM_SDK_TEST_BASE_URL']
