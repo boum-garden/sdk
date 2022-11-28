@@ -26,7 +26,7 @@ class Device:
         ...    # Set the refill times
         ...    device.refill_time = time(8, 0)
         ...    # Get the refill times
-        ...    current_refill_times = device.refill_time
+        ...    current_refill_time = device.refill_time
         ...    # Get device telemetry data
         ...    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1),
         ...        end=datetime.now())
