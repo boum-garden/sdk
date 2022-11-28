@@ -82,13 +82,24 @@ class Device:
 
     # noinspection PyTypeChecker
     @property
-    def refill_time(self) -> list[time]:
+    def refill_time(self) -> time:
         """Get or set the pump/refill times for a device (`list[time]`)"""
         return self._get_reported_device_state().refill_time
 
     @refill_time.setter
     def refill_time(self, value: time):
         desired_device_state = DeviceState(refill_time=value)
+        self._set_desired_device_state(desired_device_state)
+
+    # noinspection PyTypeChecker
+    @property
+    def refill_interval(self) -> int:
+        """Get or set the refill interval for a device in days (`int`)"""
+        return self._get_reported_device_state().refill_time
+
+    @refill_interval.setter
+    def refill_interval(self, days: int):
+        desired_device_state = DeviceState(refill_interval=days)
         self._set_desired_device_state(desired_device_state)
 
     def get_telemetry_data(self, start: datetime = None, end: datetime = None) -> dict[str, list]:

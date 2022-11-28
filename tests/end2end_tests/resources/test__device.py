@@ -49,6 +49,17 @@ class TestRefillTime:
             assert isinstance(result, time)
 
 
+class TestRefillIntervall:
+    def test__set_refill_interval__works(self, client, device):
+        with client:
+            device.refill_interval = 3
+
+    def test__get_refill_interval__works(self, client, device):
+        with client:
+            result = device.refill_interval
+            assert isinstance(result, int)
+
+
 class TestDeviceData:
     def test__without_arguments__returns_data(self, client, device):
         with client:
