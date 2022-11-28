@@ -24,24 +24,21 @@ endpoint paths. Email and password are required to use it.
 
 ```python
 >>> from boum.api_client.v1.client import ApiClient
->>> from boum.api_client.v1.models import DeviceState
->>> 
->>> with ApiClient(email, password, base_url) as client:
-...    # Get call to the devices collection
-...    device_ids = client.root.devices.get()
-...
-...    # Get call to a specific device 
-...    device_states = client.root.devices(device_ids[0]).get()
-...
-...    # Patch call to a specific device
-...    client.root.devices(device_ids[0]).patch(DeviceState())
-...
-...    # Get call to a devices data
-...    data = client.root.devices(device_ids[0]).data.get()
+>>> from boum.api_client.v1.models.device_state import DeviceState
+>>>
+>>> with ApiClient(email, password, base_url=base_url) as client:
+...     # Get call to the devices collection
+...     evice_ids = client.root.devices.get()
+...     # Get call to a specific device 
+...     device_states = client.root.devices(device_id).get()
+...     # Patch call to a specific device
+...     client.root.devices(device_id).patch(DeviceState())
+...     # Get call to a devices data
+...     data = client.root.devices(device_id).data.get()
 
 ```
 
-Note that it is not possible to use multiple instances of the client at the same time.
+Note that using multiple instances of the client is not intended and will result in unexpected behavior.
 
 
 ### Resource Abstractions
@@ -52,26 +49,27 @@ The resource abstractions provide an intuitive interface to interact with the un
 >>> import pandas as pd
 >>> from boum.api_client.v1.client import ApiClient
 >>> from boum.resources.device import Device
-
->>> with ApiClient(email, password, base_url) as client:
+>>>
+>>> with ApiClient(email, password, base_url=base_url) as client:
 ...    # Get available device ids
 ...    device_ids = Device.get_device_ids(client)
-...
 ...    # Create a device instance
-...    device = Device(device_ids[0], client)
-...
+...    device = Device(device_id, client)
 ...    # Set the pump state
-...    device.pump_state = True  # True for on, False for off
-...
-...    # Set the refill times
-...    device.refill_time = time(8, 0)
-...
-...    # Get the refill times
-...    current_refill_times = device.refill_time
-...
+...    device.set_pump_state(True)  # True for on, False for off 
+...    # Get the pump state
+...    reported, desired = device.get_pump_state()
+...    # Set the refill time
+...    device.set_refill_time(time(8, 0))
+...    # Get the refill time
+...    reported, desired = device.get_refill_time()
+...    # Set the refill interval
+...    device.set_refill_interval(3)
+...    # Get the refill interval
+...    reported, desired = device.get_refill_interval()
 ...    # Get device telemetry data
-...    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1), end=datetime.now())
-...    
+...    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1),
+...        end=datetime.now())
 ...    # Convert telemetry data to pandas dataframe
 ...    df = pd.DataFrame(data)
 
