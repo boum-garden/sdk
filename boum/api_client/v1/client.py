@@ -20,10 +20,10 @@ class ApiClient:
         -------
             >>> from boum.api_client import constants
             >>> from boum.api_client.v1.endpoints import RootEndpointClient
-            >>> from boum.api_client.v1.models import DeviceState
+            >>> from boum.api_client.v1.models.device_state import DeviceState
             >>> from boum.api_client.v1.client import ApiClient
             >>>
-            >>> with ApiClient(email, password, base_url) as client:
+            >>> with ApiClient(email, password, base_url=base_url) as client:
             ...     # Get call to the devices collection
             ...     device_ids = client.root.devices.get()
             ...     # Get call to a specific device
@@ -35,7 +35,8 @@ class ApiClient:
         """
 
     def __init__(
-            self, email: str, password: str, base_url: str = constants.API_URL_PROD, ):
+            self, email: str = None, password: str = None, refresh_token: str = None, base_url:
+            str = constants.API_URL_PROD, ):
         """
         Parameters
         ----------
@@ -47,16 +48,21 @@ class ApiClient:
                 The URL of the API. Defaults to the production API.
         """
 
+        if not (email and password) and not refresh_token:
+            raise ValueError('Either email and password or refresh_token must be set')
         ApiClient._instance = self
         self.root = RootEndpointClient(base_url, 'v1', self._refresh_access_token)
         self._email = email
         self._password = password
-        self._refresh_token = ''
+        self._refresh_token = refresh_token
 
     def __enter__(self) -> "ApiClient":
         """Connect to the API and sign in."""
         self.root.connect()
-        self._signin()
+        if self._refresh_token:
+            self._refresh_access_token()
+        else:
+            self._signin()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

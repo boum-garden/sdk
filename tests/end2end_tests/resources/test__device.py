@@ -10,7 +10,7 @@ from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID
 
 @pytest.fixture(scope='module')
 def client():
-    return ApiClient(EMAIL, PASSWORD, constants.API_URL_LOCAL)
+    return ApiClient(EMAIL, PASSWORD, base_url=constants.API_URL_LOCAL)
 
 
 @pytest.fixture(scope='module')
@@ -27,37 +27,30 @@ class TestGetDeviceIds:
             assert DEVICE_ID in result
 
 
-class TestPumpState:
-    def test__set_pump_state__works(self, client, device):
+class TestGetSetDeviceState:
+    def test__get_and_set_pump_state__works(self, client, device):
+        value = True
         with client:
-            device.pump_state = True
+            device.set_pump_state(value)
+            reported, desired = device.get_pump_state()
+            assert isinstance(reported, bool)
+            assert desired == value
 
-    def test__get_pump_state__works(self, client, device):
+    def test__get_and_set_refill_time__works(self, client, device):
+        value = time(3, 32)
         with client:
-            result = device.pump_state
-            assert isinstance(result, bool)
+            device.set_refill_time(value)
+            reported, desired = device.get_refill_time()
+            assert isinstance(reported, time)
+            assert desired == value
 
-
-class TestRefillTime:
-    def test__set_refill_time__works(self, client, device):
+    def test__get_and_set_refill_interval__works(self, client, device):
+        value = 3
         with client:
-            device.refill_time = time(3, 32)
-
-    def test__get_refill_time__works(self, client, device):
-        with client:
-            result = device.refill_time
-            assert isinstance(result, time)
-
-
-class TestRefillIntervall:
-    def test__set_refill_interval__works(self, client, device):
-        with client:
-            device.refill_interval = 3
-
-    def test__get_refill_interval__works(self, client, device):
-        with client:
-            result = device.refill_interval
-            assert isinstance(result, int)
+            device.set_refill_interval(value)
+            reported, desired = device.get_refill_interval()
+            assert isinstance(reported, int)
+            assert desired == value
 
 
 class TestDeviceData:

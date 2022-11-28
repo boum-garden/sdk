@@ -1,11 +1,11 @@
 from datetime import time
 
-from boum.api_client.v1.models import DeviceState
+from boum.api_client.v1.models.device_state import DeviceState
 
 
 class TestDeviceState:
 
-    def test__create_from_payload__works(self):
+    def test__from_payload_complete__works(self):
         payload_1 = {
             'maxPumpDuration': '10min', 'pumpState': 'off', 'refillTime': '01:53',
             'refillInterval': '3days'
@@ -28,6 +28,16 @@ class TestDeviceState:
         assert device_state_2.refill_time == time(0, 0)
         assert device_state_2.refill_interval == 4
 
+    def test__from_payload_empty__works(self):
+        payload = {}
+
+        device_state = DeviceState.from_payload(payload)
+
+        assert device_state.pump_state is None
+        assert device_state.max_pump_duration is None
+        assert device_state.refill_time is None
+        assert device_state.refill_interval is None
+
     def test__to_payload_complete__works(self):
         device_state_1 = DeviceState(
             max_pump_duration='10min', pump_state=False,
@@ -46,9 +56,7 @@ class TestDeviceState:
 
         }
 
-    def test__to_payload_partial__works(self):
-        device_state_1 = DeviceState(max_pump_duration='10min', pump_state=False)
-        device_state_2 = DeviceState(refill_time=time(0, 0))
+    def test__to_payload_empty__works(self):
+        device_state = DeviceState()
 
-        assert device_state_1.to_payload() == {'maxPumpDuration': '10min', 'pumpState': 'off'}
-        assert device_state_2.to_payload() == {'refillTime': '00:00'}
+        assert device_state.to_payload() == {}

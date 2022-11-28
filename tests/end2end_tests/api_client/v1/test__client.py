@@ -5,13 +5,23 @@ from requests import HTTPError
 
 from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
-from boum.api_client.v1.models import DeviceState
+from boum.api_client.v1.models.device_state import DeviceState
 from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID
 
 
 @pytest.fixture
 def client():
-    return ApiClient(EMAIL, PASSWORD, constants.API_URL_LOCAL)
+    return ApiClient(EMAIL, PASSWORD, base_url=constants.API_URL_LOCAL)
+
+
+class TestApiClient:
+
+    def test__instantiate_with_refresh_token__works(self, client):
+        with client:
+            _, refresh_token = client.root.auth.signin.post(EMAIL, PASSWORD)
+
+        with ApiClient(refresh_token=refresh_token, base_url=constants.API_URL_LOCAL):
+            pass
 
 
 class TestAuthEndpoints:

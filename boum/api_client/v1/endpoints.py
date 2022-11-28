@@ -6,7 +6,7 @@ from typing import Callable
 
 import requests
 
-from boum.api_client.v1.models import DeviceState
+from boum.api_client.v1.models.device_state import DeviceState
 
 
 class EndpointClient(ABC):
@@ -198,7 +198,7 @@ class DevicesEndpointClient(EndpointClient):
 
         desired_device_state = DeviceState.from_payload(data['desired'])
         reported_device_state = DeviceState.from_payload(data['reported'])
-        return desired_device_state, reported_device_state
+        return reported_device_state, desired_device_state
 
     def patch(self, desired_device_state: DeviceState):
         if not self.resource_id:
