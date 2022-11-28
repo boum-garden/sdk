@@ -3,38 +3,39 @@ from boum.api_client.v1.endpoints import RootEndpointClient
 
 
 class ApiClient:
+    # noinspection PyUnresolvedReferences
     """
-    Client for the boum API v1.
+        Client for the boum API v1.
 
-    It is implemented as a context manager, so you can use it with
-    the `with` statement. It will automatically connect and disconnect to the API. It will also
-    automatically refresh the access token when it expires.
+        It is implemented as a context manager, so you can use it with
+        the `with` statement. It will automatically connect and disconnect to the API. It will also
+        automatically refresh the access token when it expires.
 
-    Attributes
-    ----------
-        root: EndpointClient
-            The root endpoint client. It contains all the other nested endpoint clients.
+        Attributes
+        ----------
+            root: EndpointClient
+                The root endpoint client. It contains all the other nested endpoint clients.
 
-    Example
-    -------
-        >>> from boum.api_client import constants
-        >>> from boum.api_client.v1.endpoints import RootEndpointClient
-        >>> from boum.api_client.v1.models import DeviceState
-        >>> from boum.api_client.v1.client import ApiClient
-        >>>
-        >>> with ApiClient(email, password) as client:
-        ...     # Get call to the devices collection
-        ...     device_ids = client.root.devices.get()
-        ...     # Get call to a specific device
-        ...     device_states = client.root.devices(device_ids[0]).get()
-        ...     # Patch call to a specific device
-        ...     client.root.devices(device_ids[0]).patch(DeviceState())
-        ...     # Get call to a devices data
-        ...     data = client.root.devices(device_ids[0]).data.get()
-    """
+        Example
+        -------
+            >>> from boum.api_client import constants
+            >>> from boum.api_client.v1.endpoints import RootEndpointClient
+            >>> from boum.api_client.v1.models import DeviceState
+            >>> from boum.api_client.v1.client import ApiClient
+            >>>
+            >>> with ApiClient(email, password, base_url) as client:
+            ...     # Get call to the devices collection
+            ...     device_ids = client.root.devices.get()
+            ...     # Get call to a specific device
+            ...     device_states = client.root.devices(device_ids[0]).get()
+            ...     # Patch call to a specific device
+            ...     client.root.devices(device_ids[0]).patch(DeviceState())
+            ...     # Get call to a devices data
+            ...     data = client.root.devices(device_ids[0]).data.get()
+        """
 
     def __init__(
-            self, email: str, password: str, host_url: str = constants.API_URL_PROD, ):
+            self, email: str, password: str, base_url: str = constants.API_URL_PROD, ):
         """
         Parameters
         ----------
@@ -42,12 +43,12 @@ class ApiClient:
                 The email of the user.
             password: str
                 The password of the user.
-            host_url: str
+            base_url: str
                 The URL of the API. Defaults to the production API.
         """
 
         ApiClient._instance = self
-        self.root = RootEndpointClient(host_url, 'v1', self._refresh_access_token)
+        self.root = RootEndpointClient(base_url, 'v1', self._refresh_access_token)
         self._email = email
         self._password = password
         self._refresh_token = ''

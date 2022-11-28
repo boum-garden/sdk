@@ -10,7 +10,6 @@ class DeviceState:
     max_pump_duration: str | None = None
     pump_state: bool | None = None
 
-
     @staticmethod
     def from_payload(payload: dict[str, str]) -> 'DeviceState':
         pump_state_str = payload['pumpState']

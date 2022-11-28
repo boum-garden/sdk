@@ -2,7 +2,7 @@
 Status: ![GitHub Actions](https://github.com/boum-garden/sdk/actions/workflows/main.yml/badge.svg)
 
 ## Overview
-This project provides an api client to interact with the [boum api](https://api.boum.us/swagger) and abstractions to 
+This project provides an api client to interact with the [Boum API](https://api.boum.us/swagger) and abstractions to 
 simplify interactions with the underlying resources.
 
 
@@ -26,7 +26,7 @@ endpoint paths. Email and password are required to use it.
 >>> from boum.api_client.v1.client import ApiClient
 >>> from boum.api_client.v1.models import DeviceState
 >>> 
->>> with ApiClient(email, password) as client:
+>>> with ApiClient(email, password, base_url) as client:
 ...    # Get call to the devices collection
 ...    device_ids = client.root.devices.get()
 ...
@@ -53,7 +53,7 @@ The resource abstractions provide an intuitive interface to interact with the un
 >>> from boum.api_client.v1.client import ApiClient
 >>> from boum.resources.device import Device
 
->>> with ApiClient(email, password) as client:
+>>> with ApiClient(email, password, base_url) as client:
 ...    # Get available device ids
 ...    device_ids = Device.get_device_ids(client)
 ...
@@ -89,14 +89,28 @@ with [semantic versioning](https://semver.org/)
 
 
 ### Testing
-There are two types of tests in this repository: unit tests and contract tests.
 
 #### Unit tests
 These are completely self-contained and have no external dependencies.
 
-#### Contract tests
-These test the interactions of the SDK with the boum API. They require an instance (fake or real) of the API to run 
-against
+#### End-to-end tests
+These test the entire flow from user facing python classes to the underlying api calls. They require an instance 
+(fake or real) of the API to run against. They also require a registered user with a clamied device.
+API Base URL, email and password are required as environmental variables.
+
+```bash
+    BOUM_SDK_TEST_BASE_URL
+    BOUM_SDK_TEST_EMAIL
+    BOUM_SDK_TEST_PASSWORD
+```
+
+#### Doctests
+
+Part of the end-to-end tests are document tests executed using 
+[doctest](https://docs.python.org/3/library/doctest.html). 
+These tests ensure that all the examples in this README and in the docstrings are up-to-date and working.
+
+
 
 
 
