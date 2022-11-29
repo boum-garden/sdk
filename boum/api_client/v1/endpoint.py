@@ -22,7 +22,7 @@ class Endpoint(ABC):
     ----------
         url : str
             The full url of the endpoint.
-        _resource_id : str | None
+        resource_id : str | None
             The id of the resource that this endpoint represents. If it is none, the enpoint
             represents a collection of resources.
     """
@@ -57,7 +57,7 @@ class Endpoint(ABC):
         """
         self._path_segment = path_segment
         Endpoint._refresh_access_token = refresh_access_token
-        self._resource_id = resource_id
+        self.resource_id = resource_id
         self._disable_for_collection = disable_for_collection
         self._parent = parent
 
@@ -66,11 +66,10 @@ class Endpoint(ABC):
         Validate attribute access and return a new instance of the attribute with a parent added.
         """
         if isinstance(instance, Endpoint):
-            if self._disable_for_collection and not instance._resource_id:
+            if self._disable_for_collection and not instance.resource_id:
                 raise AttributeError(
-                    f'This endpoint is only available for a single resource, not for a collection')
-            else:
-                return type(self)(
+                    'This endpoint is only available for a single resource, not for a collection')
+            return type(self)(
                     path_segment=self._path_segment,
                     resource_id=None,
                     disable_for_collection=self._disable_for_collection,
@@ -96,7 +95,7 @@ class Endpoint(ABC):
         """The full url of the endpoint."""
         path_elemets = [self._parent.url if self._parent else None,
                         self._path_segment,
-                        self._resource_id]
+                        self.resource_id]
         return '/'.join(s.strip('/') for s in path_elemets if s)
 
     @classmethod
@@ -138,10 +137,14 @@ class Endpoint(ABC):
                 self._refresh_access_token()
                 logging.info('Access token refreshed. Retrying request...')
                 response = func(self, *args, **kwargs)
+
+            message = response.json().get('message')
+            if response.ok:
+                logging.info('Request successful: %s', message)
             else:
+                logging.error('Request failed: %s', message)
                 response.raise_for_status()
 
-            logging.info('Request successful.')
             return response
 
         return wrapper
@@ -157,6 +160,12 @@ class Endpoint(ABC):
     def _post(self, payload: dict = None, query_parameters: dict = None):
         """Send a POST request to the endpoint."""
         return self._session.post(url=self.url, json=payload, params=query_parameters)
+
+    # noinspection PyArgumentList
+    @_request_handler
+    def _put(self, payload: dict = None, query_parameters: dict = None):
+        """Send a PUT request to the endpoint."""
+        return self._session.put(url=self.url, json=payload, params=query_parameters)
 
     # noinspection PyArgumentList
     @_request_handler

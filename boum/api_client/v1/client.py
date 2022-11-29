@@ -118,8 +118,8 @@ class DevicesDataEndpoint(Endpoint):
     DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
     def get(self, start: datetime = None, end: datetime = None):
-        if not self._parent._resource_id:
-            raise ValueError('Cannot get data for a collection of devices')
+        if not self._parent.resource_id:
+            raise AttributeError('Cannot get data for a collection of devices')
         if start is not None and not isinstance(start, datetime):
             raise ValueError('start must be a datetime')
         if end is not None and not isinstance(end, datetime):
@@ -135,11 +135,22 @@ class DevicesDataEndpoint(Endpoint):
         return response.json()['data']['timeSeries']
 
 
+class DevicesClaimEndpoint(Endpoint):
+    def put(self):
+        self._put()
+
+    def delete(self):
+        if self.resource_id:
+            raise AttributeError('Cannot unclaim from a specific user')
+        self._delete()
+
+
 class DevicesEndpoint(Endpoint):
     data = DevicesDataEndpoint('data')
+    claim = DevicesClaimEndpoint('claim')
 
     def post(self):
-        if self._resource_id:
+        if self.resource_id:
             raise ValueError('Cannot post to a specific device')
         response = self._post()
         data = response.json()['data']
@@ -148,7 +159,7 @@ class DevicesEndpoint(Endpoint):
     def get(self):
         response = self._get()
         data = response.json()['data']
-        if not self._resource_id:
+        if not self.resource_id:
             return [d['id'] for d in data]
 
         desired_device_state = DeviceState.from_payload(data['desired'])
@@ -156,7 +167,7 @@ class DevicesEndpoint(Endpoint):
         return reported_device_state, desired_device_state
 
     def patch(self, desired_device_state: DeviceState):
-        if not self._resource_id:
+        if not self.resource_id:
             raise ValueError('Cannot patch a collection of devices')
         if not isinstance(desired_device_state, DeviceState):
             raise ValueError('desired_device_state must be a DeviceState')
@@ -166,7 +177,7 @@ class DevicesEndpoint(Endpoint):
         self._patch(payload)
 
     def delete(self):
-        if not self._resource_id:
+        if not self.resource_id:
             raise ValueError('Cannot delete a collection of devices')
         raise NotImplementedError()
 

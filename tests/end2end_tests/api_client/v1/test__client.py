@@ -101,12 +101,22 @@ class TestDevicesDataEndpointGet:
 
 class TestDevicesClaimEndpointPut:
 
-    def test__without_user_id__claims_to_currently_digned_in_user(self, client):
-        with client:
-            client.root.devices.claim.put()
-
-    def test__with_device_id__works(self, client):
+    def test__without_user_id__works(self, client):
         with client:
             client.root.devices(DEVICE_ID).claim.put()
 
+    def test__with_different_user_id__(self, client):
+        with client, pytest.raises(HTTPError):
+            client.root.devices(DEVICE_ID).claim('some_user_id').put()
 
+
+class TestDevicesClaimEndpointDelete:
+
+    @pytest.mark.skip('Unclaiming the device messes with the other tests.')
+    def test__without_user_id__works(self, client):
+        with client:
+            client.root.devices(DEVICE_ID).claim.delete()
+
+    def test__with_different_user_id__(self, client):
+        with client, pytest.raises(AttributeError):
+            client.root.devices(DEVICE_ID).claim('some_user_id').delete()
