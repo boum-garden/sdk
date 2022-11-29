@@ -133,3 +133,11 @@ class TestUsersEndpointGet:
     def test__with_user_id__works(self, client):
         with client:
             result = client.root.users(USER_ID).get()
+
+        assert isinstance(result, dict)
+    def test__with_wrong_user_id__raises_http_error(self, client):
+        with client, pytest.raises(HTTPError):
+            client.root.users('some_user_id').get()
+
+
+
