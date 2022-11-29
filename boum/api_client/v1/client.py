@@ -188,6 +188,13 @@ class DevicesEndpoint(Endpoint):
         raise NotImplementedError()
 
 
+class UsersEndpoint(Endpoint):
+    def get(self):
+        response = self._get()
+        return response.json()['data']
+
+
 class RootEndpoint(Endpoint):
     devices = DevicesEndpoint('devices')
     auth = AuthEndpoint('auth')
+    users = UsersEndpoint('users')

@@ -6,7 +6,7 @@ from requests import HTTPError
 from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models.device_state import DeviceState
-from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID
+from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, USER_ID
 
 
 @pytest.fixture
@@ -120,3 +120,16 @@ class TestDevicesClaimEndpointDelete:
     def test__with_different_user_id__(self, client):
         with client, pytest.raises(AttributeError):
             client.root.devices(DEVICE_ID).claim('some_user_id').delete()
+
+
+class TestUsersEndpointGet:
+
+    def test__without_user_id__works(self, client):
+        with client:
+            result = client.root.users.get()
+
+        assert isinstance(result, dict)
+
+    def test__with_user_id__works(self, client):
+        with client:
+            result = client.root.users(USER_ID).get()
