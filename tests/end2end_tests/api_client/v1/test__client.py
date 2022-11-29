@@ -83,11 +83,7 @@ class TestDevicesEndpointsPatch:
 
 class TestDevicesDataEndpointGet:
 
-    def test__without_device_id__raises_value_error(self, client):
-        with client, pytest.raises(ValueError):
-            client.root.devices.data.get()
-
-    def test__with_device_id__returns_data(self, client):
+    def test__without_arguments__returns_data(self, client):
         with client:
             data = client.root.devices(DEVICE_ID).data.get()
             for k, v in data.items():
@@ -101,3 +97,26 @@ class TestDevicesDataEndpointGet:
             for k, v in data.items():
                 assert isinstance(k, str)
                 assert isinstance(v, list)
+
+
+class TestDevicesClaimEndpointPut:
+
+    def test__without_user_id__works(self, client):
+        with client:
+            client.root.devices(DEVICE_ID).claim.put()
+
+    def test__with_different_user_id__(self, client):
+        with client, pytest.raises(HTTPError):
+            client.root.devices(DEVICE_ID).claim('some_user_id').put()
+
+
+class TestDevicesClaimEndpointDelete:
+
+    @pytest.mark.skip('Unclaiming the device messes with the other tests.')
+    def test__without_user_id__works(self, client):
+        with client:
+            client.root.devices(DEVICE_ID).claim.delete()
+
+    def test__with_different_user_id__(self, client):
+        with client, pytest.raises(AttributeError):
+            client.root.devices(DEVICE_ID).claim('some_user_id').delete()
