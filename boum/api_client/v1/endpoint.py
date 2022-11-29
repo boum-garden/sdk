@@ -40,15 +40,13 @@ class Endpoint(ABC):
         """
         Parameters
         ----------
-            base_url
-                The url of the parent endpoint.
-            path
+            path_segment
                 The path segment of the endpoint.
-            parent
-                The parent endpoint.
             resource_id
                 The id of the resource that this endpoint represents. If it is none, the enpoint
                 represents a collection of resources.
+            parent
+                The parent endpoint. If it is none, the endpoint is the root of the tree.
             refresh_access_token
                 A callable that refreshes the access token.
             disable_for_collection

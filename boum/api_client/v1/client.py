@@ -14,6 +14,9 @@ class ApiClient:
         the `with` statement. It will automatically connect and disconnect to the API. It will also
         automatically refresh the access token when it expires.
 
+        A detailed documentation of the endpoint hierarchy can be found at the swagger page of
+        the API (base_url/swagger).
+
         Attributes
         ----------
             root: EndpointClient
@@ -42,11 +45,13 @@ class ApiClient:
         """
         Parameters
         ----------
-            email: str
-                The email of the user.
-            password: str
-                The password of the user.
-            base_url: str
+            email
+                The email of the user. Required if `refresh_token` is not set.
+            password
+                The password of the user. Required if `refresh_token` is not set.
+            refresh_token
+                The refresh token of the user. Required if `email` and `password` are not set.
+            base_url
                 The URL of the API. Defaults to the production API.
         """
 
@@ -59,7 +64,7 @@ class ApiClient:
         self._refresh_token = refresh_token
 
     def __enter__(self) -> "ApiClient":
-        """Connect to the API and sign in."""
+        """Connect to the API and sign in or refresh the access token."""
         self.root.connect()
         if self._refresh_token:
             self._refresh_access_token()
@@ -68,6 +73,7 @@ class ApiClient:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """Disconnect from the API."""
         self.root.disconnect()
 
     def _signin(self):
