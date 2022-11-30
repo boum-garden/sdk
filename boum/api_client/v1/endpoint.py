@@ -143,9 +143,9 @@ class Endpoint(ABC):
 
             message = response.json().get('message')
             if response.ok:
-                logging.info('Request successful: %s', message)
+                logging.info('Request successful (%s): %s', response.status_code, message)
             else:
-                logging.error('Request failed: %s', message)
+                logging.error('Request failed (%s): %s', response.status_code, message)
                 response.raise_for_status()
 
             return response

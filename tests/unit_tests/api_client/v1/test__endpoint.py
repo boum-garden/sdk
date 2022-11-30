@@ -4,38 +4,56 @@ from boum.api_client.v1.endpoint import Endpoint
 
 
 class EndpointAC(Endpoint):
-    pass
+    # pylint: disable=useless-parent-delegation
+    def __get__(self, instance, owner: type) -> "EndpointAC":
+        return super().__get__(instance, owner)
 
 
 class EndpointA(Endpoint):
     endpoint_c = EndpointAC('c')
 
+    # pylint: disable=useless-parent-delegation
+    def __get__(self, instance, owner: type) -> "EndpointA":
+        return super().__get__(instance, owner)
+
 
 class EndpointBD(Endpoint):
-    pass
+    # pylint: disable=useless-parent-delegation
+    def __get__(self, instance, owner: type) -> "EndpointBD":
+        return super().__get__(instance, owner)
 
 
 class EndpointB(Endpoint):
     endpoint_d = EndpointBD('d', disable_for_collection=True)
 
+    # pylint: disable=useless-parent-delegation
+    def __get__(self, instance, owner: type) -> "UsersEndpoint":
+        return super().__get__(instance, owner)
+
 
 class EndpointRoot(Endpoint):
-    _path_segment = ''
     endpoint_a = EndpointA('a')
     endpoint_b = EndpointB('b')
 
+    # pylint: disable=useless-parent-delegation
+    def __get__(self, instance, owner: type) -> "EndpointRoot":
+        return super().__get__(instance, owner)
+
 
 def test__create_without_resource_where_enabled__urls_are_correct():
-    root = EndpointRoot('base', '/')
+    root = EndpointRoot('base')
     assert root.url == 'base/'
     assert root.endpoint_a.url == 'base/a'
     assert root.endpoint_a.endpoint_c.url == 'base/a/c'
     assert root.endpoint_b.url == 'base/b'
 
+
 def test__create_without_resource_where_disabled__raises_attribute_error():
-    root = EndpointRoot('base', '/')
+    root = EndpointRoot('base')
     with pytest.raises(AttributeError):
+        # pylint: disable=pointless-statement
         root.endpoint_b.endpoint_d.url
+
 
 def test__create_with_resource_ids__urls_are_correct():
     root = EndpointRoot('base')
