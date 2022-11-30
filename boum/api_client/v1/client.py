@@ -58,7 +58,7 @@ class ApiClient:
         if not (email and password) and not refresh_token:
             raise ValueError('Either email and password or refresh_token must be set')
         ApiClient._instance = self
-        self.root = RootEndpoint(base_url, 'v1', self._refresh_access_token)
+        self.root = RootEndpoint(base_url + 'v1', refresh_access_token=self._refresh_access_token)
         self._email = email
         self._password = password
         self._refresh_token = refresh_token
@@ -91,6 +91,9 @@ class ApiClient:
 
 class AuthTokenEndpoint(Endpoint):
 
+    def __get__(self, instance, owner: type) -> "AuthTokenEndpoint":
+        return super().__get__(instance, owner)
+
     def post(self, refresh_token: str):
         if not isinstance(refresh_token, str):
             raise ValueError('refresh_token must be a string')
@@ -102,6 +105,9 @@ class AuthTokenEndpoint(Endpoint):
 
 
 class AuthSigninEndpoint(Endpoint):
+
+    def __get__(self, instance, owner: type) -> "AuthSigninEndpoint":
+        return super().__get__(instance, owner)
 
     def post(self, email: str, password: str):
         if not isinstance(email, str):
@@ -119,9 +125,15 @@ class AuthEndpoint(Endpoint):
     signin = AuthSigninEndpoint('signin')
     token = AuthTokenEndpoint('token')
 
+    def __get__(self, instance, owner: type) -> "AuthEndpoint":
+        return super().__get__(instance, owner)
+
 
 class DevicesDataEndpoint(Endpoint):
     DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
+    def __get__(self, instance, owner: type) -> "DevicesDataEndpoint":
+        return super().__get__(instance, owner)
 
     def get(self, start: datetime = None, end: datetime = None):
         if not self._parent.resource_id:
@@ -142,6 +154,10 @@ class DevicesDataEndpoint(Endpoint):
 
 
 class DevicesClaimEndpoint(Endpoint):
+
+    def __get__(self, instance, owner: type) -> "DevicesClaimEndpoint":
+        return super().__get__(instance, owner)
+
     def put(self):
         self._put()
 
@@ -154,6 +170,9 @@ class DevicesClaimEndpoint(Endpoint):
 class DevicesEndpoint(Endpoint):
     data = DevicesDataEndpoint('data')
     claim = DevicesClaimEndpoint('claim')
+
+    def __get__(self, instance, owner: type) -> "DevicesEndpoint":
+        return super().__get__(instance, owner)
 
     def post(self):
         if self.resource_id:
@@ -189,6 +208,10 @@ class DevicesEndpoint(Endpoint):
 
 
 class UsersEndpoint(Endpoint):
+
+    def __get__(self, instance, owner: type) -> "UsersEndpoint":
+        return super().__get__(instance, owner)
+
     def get(self):
         response = self._get()
         return response.json()['data']
@@ -198,3 +221,6 @@ class RootEndpoint(Endpoint):
     devices = DevicesEndpoint('devices')
     auth = AuthEndpoint('auth')
     users = UsersEndpoint('users')
+
+    def __get__(self, instance, owner: type) -> "RootEndpoint":
+        return super().__get__(instance, owner)

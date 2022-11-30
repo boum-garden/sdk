@@ -1,6 +1,6 @@
 import functools
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Callable
 
 import requests
@@ -59,9 +59,14 @@ class Endpoint(ABC):
         self._disable_for_collection = disable_for_collection
         self._parent = parent
 
+    @abstractmethod
     def __get__(self, instance, owner: type):
         """
         Validate attribute access and return a new instance of the attribute with a parent added.
+        Every subclass must implement this method for propper type hinting with the propper
+        return type as:
+            def __get__(self, instance, owner: type) -> "...Endpoint":
+                return super().__get__(instance, owner)
         """
         if isinstance(instance, Endpoint):
             if self._disable_for_collection and not instance.resource_id:

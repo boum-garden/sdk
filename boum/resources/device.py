@@ -69,7 +69,6 @@ class Device:
             list[str]
                 The device ids
         """
-
         return api_client.root.devices.get()
 
     def _set_desired_device_state(self, desired_device_state: DeviceState):
@@ -164,5 +163,5 @@ class Device:
             dict[str, list]
                 The telemetry data
         """
-
         return self._api_client.root.devices(self.device_id).data.get(start, end)
+
