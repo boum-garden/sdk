@@ -6,6 +6,7 @@ from requests import HTTPError
 from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models.device_state import DeviceState
+from boum.api_client.v1.models.user_details import UserDetails
 from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, USER_ID
 
 
@@ -121,13 +122,13 @@ class TestUsersEndpointGet:
         with client:
             result = client.root.users.get()
 
-        assert isinstance(result, dict)
+        assert isinstance(result, UserDetails)
 
     def test__with_user_id__works(self, client):
         with client:
             result = client.root.users(USER_ID).get()
 
-        assert isinstance(result, dict)
+        assert isinstance(result, UserDetails)
 
     def test__with_wrong_user_id__raises_http_error(self, client):
         with client, pytest.raises(HTTPError):

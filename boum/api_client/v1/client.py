@@ -3,6 +3,7 @@ from datetime import datetime
 from boum.api_client import constants
 from boum.api_client.v1.endpoint import Endpoint
 from boum.api_client.v1.models.device_state import DeviceState
+from boum.api_client.v1.models.user_details import UserDetails
 
 
 class ApiClient:
@@ -219,9 +220,10 @@ class UsersEndpoint(Endpoint):
     def __get__(self, instance, owner: type) -> "UsersEndpoint":
         return super().__get__(instance, owner)
 
-    def get(self):
+    def get(self) -> UserDetails:
         response = self._get()
-        return response.json()['data']
+        payload = response.json()['data']
+        return UserDetails.from_payload(payload)
 
 
 class RootEndpoint(Endpoint):
