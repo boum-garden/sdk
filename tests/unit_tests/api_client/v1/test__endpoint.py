@@ -42,7 +42,7 @@ class EndpointRoot(Endpoint):
 
 def test__create_without_resource_where_enabled__urls_are_correct():
     root = EndpointRoot('base')
-    assert root.url == 'base/'
+    assert root.url == 'base'
     assert root.endpoint_a.url == 'base/a'
     assert root.endpoint_a.endpoint_c.url == 'base/a/c'
     assert root.endpoint_b.url == 'base/b'

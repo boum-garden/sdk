@@ -49,7 +49,7 @@ class TestGetSetDeviceState:
         with client:
             device.set_refill_interval(value)
             reported, desired = device.get_refill_interval()
-            assert isinstance(reported, int)
+            assert isinstance(reported, int | None)
             assert desired == value
 
 

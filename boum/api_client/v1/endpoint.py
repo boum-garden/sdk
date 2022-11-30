@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Callable
 
 import requests
+from requests import JSONDecodeError
 
 
 class Endpoint(ABC):
@@ -73,11 +74,11 @@ class Endpoint(ABC):
                 raise AttributeError(
                     'This endpoint is only available for a single resource, not for a collection')
             return type(self)(
-                    path_segment=self._path_segment,
-                    resource_id=None,
-                    disable_for_collection=self._disable_for_collection,
-                    refresh_access_token=self._refresh_access_token,
-                    parent=instance)
+                path_segment=self._path_segment,
+                resource_id=None,
+                disable_for_collection=self._disable_for_collection,
+                refresh_access_token=self._refresh_access_token,
+                parent=instance)
 
         return self
 
@@ -131,17 +132,25 @@ class Endpoint(ABC):
 
         @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
+
+            def execute_and_parse():
+                response = func(self, *args, **kwargs)
+                try:
+                    message = response.json().get('message')
+                except JSONDecodeError:
+                    message = 'No message'
+                return response, message
+
             logging.info("Calling %s on %s...", func.__name__, self.url)
-            response = func(self, *args, **kwargs)
+            response, message = execute_and_parse()
 
             if response.status_code == 401 \
-                    and self._access_token_expired_message == response.json()['message']:
+                    and self._access_token_expired_message == message:
                 logging.info('Access token expired. Refreshing...')
                 self._refresh_access_token()
                 logging.info('Access token refreshed. Retrying request...')
-                response = func(self, *args, **kwargs)
+                response, message = execute_and_parse()
 
-            message = response.json().get('message')
             if response.ok:
                 logging.info('Request successful (%s): %s', response.status_code, message)
             else:
