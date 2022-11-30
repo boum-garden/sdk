@@ -54,7 +54,11 @@ The resource abstractions provide an intuitive interface to interact with the un
 ...    # Get available device ids
 ...    device_ids = Device.get_device_ids(client)
 ...    # Create a device instance
-...    device = Device(device_id, client)
+...    device = Device(device_id, client)        
+...    # Remove device claim
+...    device.unclaim()
+...    # Claim a device
+...    device.claim()
 ...    # Set the pump state
 ...    device.set_pump_state(True)  # True for on, False for off 
 ...    # Get the pump state
