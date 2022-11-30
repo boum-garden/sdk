@@ -99,25 +99,18 @@ class TestDevicesDataEndpointGet:
                 assert isinstance(v, list)
 
 
-class TestDevicesClaimEndpointPut:
+class TestDevicesClaimEndpoint:
 
     def test__without_user_id__works(self, client):
         with client:
+            client.root.devices(DEVICE_ID).claim.delete()
             client.root.devices(DEVICE_ID).claim.put()
 
     def test__with_different_user_id__(self, client):
         with client, pytest.raises(HTTPError):
             client.root.devices(DEVICE_ID).claim('some_user_id').put()
 
-
-class TestDevicesClaimEndpointDelete:
-
-    @pytest.mark.skip('Unclaiming the device messes with the other tests.')
-    def test__without_user_id__works(self, client):
-        with client:
-            client.root.devices(DEVICE_ID).claim.delete()
-
-    def test__with_different_user_id__(self, client):
+    def test__delete_with_different_user_id__raises_error(self, client):
         with client, pytest.raises(AttributeError):
             client.root.devices(DEVICE_ID).claim('some_user_id').delete()
 

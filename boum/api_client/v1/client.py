@@ -58,7 +58,7 @@ class ApiClient:
         if not (email and password) and not refresh_token:
             raise ValueError('Either email and password or refresh_token must be set')
         ApiClient._instance = self
-        self.root = RootEndpoint(base_url + 'v1', refresh_access_token=self._refresh_access_token)
+        self.root = RootEndpoint(base_url + '/v1', refresh_access_token=self._refresh_access_token)
         self._email = email
         self._password = password
         self._refresh_token = refresh_token
@@ -91,6 +91,7 @@ class ApiClient:
 
 class AuthTokenEndpoint(Endpoint):
 
+    # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "AuthTokenEndpoint":
         return super().__get__(instance, owner)
 
@@ -106,6 +107,7 @@ class AuthTokenEndpoint(Endpoint):
 
 class AuthSigninEndpoint(Endpoint):
 
+    # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "AuthSigninEndpoint":
         return super().__get__(instance, owner)
 
@@ -125,6 +127,7 @@ class AuthEndpoint(Endpoint):
     signin = AuthSigninEndpoint('signin')
     token = AuthTokenEndpoint('token')
 
+    # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "AuthEndpoint":
         return super().__get__(instance, owner)
 
@@ -132,6 +135,7 @@ class AuthEndpoint(Endpoint):
 class DevicesDataEndpoint(Endpoint):
     DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
+    # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "DevicesDataEndpoint":
         return super().__get__(instance, owner)
 
@@ -155,6 +159,7 @@ class DevicesDataEndpoint(Endpoint):
 
 class DevicesClaimEndpoint(Endpoint):
 
+    # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "DevicesClaimEndpoint":
         return super().__get__(instance, owner)
 
@@ -171,6 +176,7 @@ class DevicesEndpoint(Endpoint):
     data = DevicesDataEndpoint('data')
     claim = DevicesClaimEndpoint('claim')
 
+    # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "DevicesEndpoint":
         return super().__get__(instance, owner)
 
@@ -209,6 +215,7 @@ class DevicesEndpoint(Endpoint):
 
 class UsersEndpoint(Endpoint):
 
+    # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "UsersEndpoint":
         return super().__get__(instance, owner)
 
@@ -222,5 +229,6 @@ class RootEndpoint(Endpoint):
     auth = AuthEndpoint('auth')
     users = UsersEndpoint('users')
 
+    # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "RootEndpoint":
         return super().__get__(instance, owner)

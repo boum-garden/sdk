@@ -24,6 +24,10 @@ class Device:
         ...    device_ids = Device.get_device_ids(client)
         ...    # Create a device instance
         ...    device = Device(device_id, client)
+        ...    # Remove device claim
+        ...    device.unclaim()
+        ...    # Claim a device
+        ...    device.claim()
         ...    # Set the pump state
         ...    device.set_pump_state(True)  # True for on, False for off
         ...    # Get the pump state
@@ -149,7 +153,8 @@ class Device:
         self._set_desired_device_state(desired)
 
     def get_telemetry_data(self, start: datetime = None, end: datetime = None) -> dict[str, list]:
-        """Get telemetry data for a device
+        """
+        Get telemetry data for a device
 
         Parameters
         ----------
@@ -165,3 +170,23 @@ class Device:
         """
         return self._api_client.root.devices(self.device_id).data.get(start, end)
 
+    def claim(self, user_id: str = None):
+        """
+        Claim a device for the currently signed in use or a specified one.
+
+        PArameters
+        ----------
+        user_id
+            If this is specified, the device is claimed for the given user instead of the on that
+            is signed in.
+        """
+        if user_id:
+            self._api_client.root.devices.claim(user_id).put()
+        else:
+            self._api_client.root.devices.claim.put()
+
+    def unclaim(self):
+        """
+        Remove any claim to the device.
+        """
+        self._api_client.root.devices.claim.delete()
