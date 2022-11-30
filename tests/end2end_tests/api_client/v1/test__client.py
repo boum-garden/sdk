@@ -100,16 +100,33 @@ class TestDevicesDataEndpointGet:
                 assert isinstance(v, list)
 
 
-class TestDevicesClaimEndpoint:
+class TestDevicesClaimEndpointPut:
 
     def test__without_user_id__works(self, client):
         with client:
-            client.root.devices(DEVICE_ID).claim.delete()
+            try:
+                client.root.devices(DEVICE_ID).claim.delete()
+            except HTTPError as e:
+                if e.response.status_code != 404:
+                    raise e
             client.root.devices(DEVICE_ID).claim.put()
 
     def test__with_different_user_id__(self, client):
         with client, pytest.raises(HTTPError):
             client.root.devices(DEVICE_ID).claim('some_user_id').put()
+
+
+class TestDevicesClaimEndpointDelete:
+
+    def test__without_user_id__works(self, client):
+        with client:
+            try:
+                client.root.devices(DEVICE_ID).claim.put()
+            except HTTPError as e:
+                if e.response.status_code != 401:
+                    raise e
+            client.root.devices(DEVICE_ID).claim.delete()
+            client.root.devices(DEVICE_ID).claim.put()
 
     def test__delete_with_different_user_id__raises_error(self, client):
         with client, pytest.raises(AttributeError):
