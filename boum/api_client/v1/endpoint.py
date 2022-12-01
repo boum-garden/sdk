@@ -31,7 +31,7 @@ class Endpoint(ABC):
     _session: requests.Session | None = None
     _headers: dict[str, str] = {}
     _refresh_access_token: Callable[[], None] = None
-    _access_token_expired_message = 'AccessTokenExpired'
+    _access_token_expired_message = 'AccessTokenExpired' #nosec
 
     def __init__(
             self, path_segment: str, resource_id: str | None = None,
