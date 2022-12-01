@@ -1,4 +1,4 @@
-name: Python check on push to branch
+name: Python checks on push to branch
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
 
-  tests:
+  python-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
