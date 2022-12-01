@@ -32,6 +32,7 @@ tag = true
 push = true
 
 [tool.bumpver.file_patterns]
+tag = "False"
 "pyproject.toml" = [
     'current_version = "{version}"',
     'version = "{version}"',
