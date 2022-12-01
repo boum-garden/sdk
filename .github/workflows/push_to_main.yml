@@ -53,6 +53,12 @@ jobs:
 
       - name: Pytest
         run: poetry run pytest --junitxml=${{ github.workspace }}/pytest_report.xml || [ $? = 1 ]
+        env:
+          BOUM_SDK_TEST_EMAIL: boum.sdk.test.user@boum.garden
+          BOUM_SDK_TEST_PASSWORD: ${{ secrets.BOUM_SDK_TEST_PASSWORD}}
+          BOUM_SDK_TEST_DEVICE_ID: 9a8a5e6d-12d5-4997-b9da-0bb446eacb2f
+          BOUM_SDK_TEST_BASE_URL: https://api-dev.boum.us
+          BOUM_SDK_TEST_USER_ID: 7XDADsQ9FYS0EusHZiZIBMeUerQ2
 
       - name: Publish pytest iot-backend report
         id: publish-pytest-iot-backend-report
