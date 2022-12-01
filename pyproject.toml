@@ -37,6 +37,7 @@ push = true
     'version = "{version}"',
 ]
 
+
 [tool.bandit]
 skips = ["B101", "B311"]
 

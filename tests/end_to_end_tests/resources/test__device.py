@@ -7,7 +7,7 @@ from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models import DeviceStateModel
 from boum.resources.device import Device
-from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID
+from tests.end_to_end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID
 
 
 @pytest.fixture(scope='module')

@@ -1,0 +1,72 @@
+name: Python checks
+
+on:
+  push:
+    branches: [ '*' ]
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+jobs:
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: cache poetry install
+        uses: actions/cache@v2
+        with:
+          path: ~/.local
+          key: poetry-1.2.2-0
+
+      - uses: snok/install-poetry@v1
+        with:
+          version: 1.2.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: cache deps
+        id: cache-deps
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: pydeps-${{ hashFiles('**/poetry.lock') }}
+
+      - name: install poetry
+        run: poetry install --no-interaction --no-root
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+
+      - run: poetry install --no-interaction
+
+      - name: Pytest
+        run: poetry run pytest --junitxml=${{ github.workspace }}/pytest_report.xml || [ $? = 1 ]
+
+      - name: Publish pytest iot-backend report
+        id: publish-pytest-iot-backend-report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        if: success() || failure()
+        with:
+          files: ${{ github.workspace }}/pytest_report.xml
+          check_name: Pytest Results - IoT Backend
+
+      - name: Pylint
+        if: success() || failure()
+        run: peotry run pylint
+
+      - name: Bandit
+        if: success() || failure()
+        run: peotry run bandit
+

@@ -7,7 +7,7 @@ from requests import HTTPError
 from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models import DeviceModel, DeviceStateModel, UserModel
-from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, USER_ID
+from tests.end_to_end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, USER_ID
 
 
 @pytest.fixture
