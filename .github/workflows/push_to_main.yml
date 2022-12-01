@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: cache poetry install
+      - name: cache poetry
         id: cache-poetry
         uses: actions/cache@v3
         with:
@@ -40,9 +40,9 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      - name: cache deps
+      - name: cache dependencies
         id: cache-deps
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: pydeps-${{ hashFiles('**/poetry.lock') }}
@@ -54,7 +54,9 @@ jobs:
       - run: poetry install --no-interaction
 
       - name: Pylint
-        run: poetry run pylint .
+        run: |
+          poetry run pylint ./boum
+          poetry run pylint ./tests
 
       - name: Bandit
         if: success() || failure()
