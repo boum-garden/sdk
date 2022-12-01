@@ -1,0 +1,84 @@
+name: Python checks on push to branch
+
+on:
+  push:
+    branches: [ '*', '!main' ]
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+jobs:
+
+  python-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: cache poetry
+        id: cache-poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.local
+          key: poetry-1.2.2-0
+
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        if: steps.cache-poetry.outputs.cache-hit != 'true'
+        with:
+          version: 1.2.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: cache dependencies
+        id: cache-deps
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: pydeps-0
+
+      - name: poetry install dependencies
+        run: poetry install --no-interaction --no-root
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+
+      - name: poetry install project
+        run: poetry install --no-interaction
+
+      - name: Pylint
+        run: |
+          poetry run pylint ./boum
+          poetry run pylint ./tests
+
+      - name: Bandit
+        if: success() || failure()
+        run: poetry run bandit -c pyproject.toml -r ./boum
+
+      - name: Pytest
+        if: success() || failure()
+        run: poetry run pytest --junitxml=${{ github.workspace }}/pytest_report.xml || [ $? = 1 ]
+        env:
+          BOUM_SDK_TEST_EMAIL: boum.sdk.test.user@boum.garden
+          BOUM_SDK_TEST_PASSWORD: ${{ secrets.BOUM_SDK_TEST_PASSWORD}}
+          BOUM_SDK_TEST_DEVICE_ID: 9a8a5e6d-12d5-4997-b9da-0bb446eacb2f
+          BOUM_SDK_TEST_BASE_URL: https://api-dev.boum.us
+          BOUM_SDK_TEST_USER_ID: 7XDADsQ9FYS0EusHZiZIBMeUerQ2
+
+      - name: Publish pytest report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        with:
+          files: ${{ github.workspace }}/pytest_report.xml
+          check_name: Pytest Results
+
+
+

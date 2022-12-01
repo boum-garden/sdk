@@ -3,16 +3,15 @@ from datetime import datetime, timedelta, time
 
 import pytest
 
-from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models import DeviceStateModel
 from boum.resources.device import Device
-from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID
+from tests.end_to_end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, BASE_URL
 
 
 @pytest.fixture(scope='module')
 def client():
-    return ApiClient(EMAIL, PASSWORD, base_url=constants.API_URL_LOCAL)
+    return ApiClient(EMAIL, PASSWORD, base_url=BASE_URL)
 
 
 @pytest.fixture(scope='module')
