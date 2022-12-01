@@ -3,7 +3,8 @@ name: Test deployment on push to main
 
 on:
   push:
-    branches: ['-']
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+    branches: ['*']
 
 jobs:
 
@@ -52,7 +53,7 @@ jobs:
       - name: Deploy to pypi test
         run: |
           poetry config repositories.pypi https://pypi.org/legacy/
-          poetry config pypi-token.pypi ${{ secrets.PYPI_TEST_TOKEN }}
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
           poetry publish --build -r pypi
 
 
