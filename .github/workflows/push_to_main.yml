@@ -62,7 +62,7 @@ jobs:
 
       - name: Bandit
         if: success() || failure()
-        run: poetry run bandit -c pyproject.toml -r .
+        run: poetry run bandit -c pyproject.toml -r ./boum
 
       - name: Pytest
         if: success() || failure()
