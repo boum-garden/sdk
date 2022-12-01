@@ -4,7 +4,6 @@ from datetime import datetime, timedelta, time
 import pytest
 from requests import HTTPError
 
-from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models import DeviceModel, DeviceStateModel, UserModel
 from tests.end_to_end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, USER_ID, BASE_URL
@@ -21,7 +20,7 @@ class TestApiClient:
         with client:
             _, refresh_token = client.root.auth.signin.post(EMAIL, PASSWORD)
 
-        with ApiClient(refresh_token=refresh_token, base_url=constants.API_URL_LOCAL):
+        with ApiClient(refresh_token=refresh_token, base_url=BASE_URL):
             pass
 
 
@@ -61,7 +60,6 @@ class TestDevicesEndpoint:
     @pytest.mark.parametrize('pump_state', [True, False])
     def test__patch_and_get_with_device_id__sets_and_returns_new_desired_state(
             self, client, pump_state: bool):
-
         desired_state_in = DeviceStateModel(
             pump_state=pump_state,
             refill_time=time(random.randint(0, 23), random.randint(0, 59)),

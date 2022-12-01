@@ -1,8 +1,8 @@
-name: Python checks
+name: Python check on push to branch
 
 on:
   push:
-    branches: [ '*' ]
+    branches: [ '*', '!main' ]
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
