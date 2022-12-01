@@ -1,12 +1,12 @@
-from datetime import datetime, timedelta
+import random
+from datetime import datetime, timedelta, time
 
 import pytest
 from requests import HTTPError
 
 from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
-from boum.api_client.v1.models.device_state import DeviceState
-from boum.api_client.v1.models.user_details import UserDetails
+from boum.api_client.v1.models import DeviceModel, DeviceStateModel, UserModel
 from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, USER_ID
 
 
@@ -25,16 +25,19 @@ class TestApiClient:
             pass
 
 
-class TestAuthEndpoints:
+class TestAuthSigninEndpoint:
 
-    def test__signin_endpoint(self, client):
+    def test__post__works(self, client):
         with client:
             access_token, refresh_token = client.root.auth.signin.post(EMAIL, PASSWORD)
 
         assert access_token
         assert refresh_token
 
-    def test__refresh_token_endpoint(self, client):
+
+class TestAuthTokenEndpoint:
+
+    def test__post__works(self, client):
         with client:
             access_token_1, refresh_token = client.root.auth.signin.post(EMAIL, PASSWORD)
             access_token_2 = client.root.auth.token.post(refresh_token)
@@ -43,55 +46,63 @@ class TestAuthEndpoints:
         assert access_token_1 != access_token_2
 
 
-class TestDevicesEndpointPost:
+class TestDevicesEndpoint:
 
-    def test__without_device_id__raises_http_error_401(self, client):
-        with client, pytest.raises(HTTPError):
-            client.root.devices.post()
-
-    def test__with_device_id__raises_value_error(self, client):
-        with client, pytest.raises(ValueError):
-            client.root.devices(DEVICE_ID).post()
-
-
-class TestDevicesEndpointsGet:
+    @pytest.fixture
+    def device_model(self):
+        return DeviceModel(desired_state=DeviceStateModel())
 
     @pytest.mark.flaky(reruns=3)
-    def test__without_device_id__returns_list_with_device_id(self, client):
+    def test__get_without_device_id__returns_list_with_device_id(self, client):
         with client:
             result = client.root.devices.get()
             assert result == [DEVICE_ID]
 
-    def test__with_device_id__returns_device_states(self, client):
+    @pytest.mark.parametrize('pump_state', [True, False])
+    def test__patch_and_get_with_device_id__sets_and_returns_new_desired_state(
+            self, client, pump_state: bool):
+
+        desired_state_in = DeviceStateModel(
+            pump_state=pump_state,
+            refill_time=time(random.randint(0, 23), random.randint(0, 59)),
+            refill_interval=random.randint(0, 10),
+            max_pump_duration=random.randint(0, 10),
+        )
+        device_model_in = DeviceModel(desired_state_in)
+
         with client:
-            desired, reported = client.root.devices(DEVICE_ID).get()
-            assert isinstance(desired, DeviceState)
-            assert isinstance(reported, DeviceState)
+            client.root.devices(DEVICE_ID).patch(device_model_in)
+            device_model_out = client.root.devices(DEVICE_ID).get()
 
+        assert device_model_out.desired_state == desired_state_in
+        assert isinstance(device_model_out.reported_state, DeviceStateModel)
+        assert device_model_out.reported_state
 
-class TestDevicesEndpointsPatch:
+    def test__post_without_device_id__raises_401_error(self, client):
+        with client, pytest.raises(HTTPError) as e:
+            client.root.devices.post()
 
-    def test__without_device_id__raises_value_error(self, client):
-        desired_device_state = DeviceState()
+            assert e.value.response.status_code == 401
+
+    def test__post_with_device_id__raises_value_error(self, client):
         with client, pytest.raises(ValueError):
-            client.root.devices.patch(desired_device_state)
+            client.root.devices(DEVICE_ID).post()
 
-    def test__with_device_id__works(self, client):
-        desired_device_state = DeviceState()
-        with client:
-            client.root.devices(DEVICE_ID).patch(desired_device_state)
+    def test__patch_without_device_id__raises_value_error(self, client, device_model):
+        with client, pytest.raises(ValueError):
+            client.root.devices.patch(device_model)
 
 
-class TestDevicesDataEndpointGet:
+class TestDevicesDataEndpoint:
 
-    def test__without_arguments__returns_data(self, client):
+    def test__get_without_arguments__returns_data(self, client):
         with client:
             data = client.root.devices(DEVICE_ID).data.get()
             for k, v in data.items():
                 assert isinstance(k, str)
                 assert isinstance(v, list)
 
-    def test__with_time_restrictions__returns_data(self, client):
+    def test__get_with_time_restrictions__returns_data(self, client):
         with client:
             start, end = datetime.now() - timedelta(days=1), datetime.now()
             data = client.root.devices(DEVICE_ID).data.get(start=start, end=end)
@@ -100,9 +111,9 @@ class TestDevicesDataEndpointGet:
                 assert isinstance(v, list)
 
 
-class TestDevicesClaimEndpointPut:
+class TestDevicesClaimEndpoint:
 
-    def test__without_user_id__works(self, client):
+    def test__put_with_user_id__works(self, client):
         with client:
             try:
                 client.root.devices(DEVICE_ID).claim.delete()
@@ -111,14 +122,7 @@ class TestDevicesClaimEndpointPut:
                     raise e
             client.root.devices(DEVICE_ID).claim.put()
 
-    def test__with_different_user_id__(self, client):
-        with client, pytest.raises(HTTPError):
-            client.root.devices(DEVICE_ID).claim('some_user_id').put()
-
-
-class TestDevicesClaimEndpointDelete:
-
-    def test__without_user_id__works(self, client):
+    def test__delete_and_put_without_user_id__works(self, client):
         with client:
             try:
                 client.root.devices(DEVICE_ID).claim.put()
@@ -133,20 +137,20 @@ class TestDevicesClaimEndpointDelete:
             client.root.devices(DEVICE_ID).claim('some_user_id').delete()
 
 
-class TestUsersEndpointGet:
+class TestUsersEndpoint:
 
-    def test__without_user_id__works(self, client):
+    def test__get_without_user_id__works(self, client):
         with client:
             result = client.root.users.get()
 
-        assert isinstance(result, UserDetails)
+        assert isinstance(result, UserModel)
 
-    def test__with_user_id__works(self, client):
+    def test__get_with_user_id__works(self, client):
         with client:
             result = client.root.users(USER_ID).get()
 
-        assert isinstance(result, UserDetails)
+        assert isinstance(result, UserModel)
 
-    def test__with_wrong_user_id__raises_http_error(self, client):
+    def test__get_with_wrong_user_id__raises_http_error(self, client):
         with client, pytest.raises(HTTPError):
             client.root.users('some_user_id').get()
