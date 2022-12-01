@@ -52,7 +52,7 @@ jobs:
       - run: poetry install --no-interaction
 
       - name: Pylint
-        run: poetry run pylint
+        run: poetry run pylint .
 
       - name: Bandit
         if: success() || failure()
