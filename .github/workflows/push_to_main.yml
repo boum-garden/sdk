@@ -51,7 +51,15 @@ jobs:
 
       - run: poetry install --no-interaction
 
+      - name: Pylint
+        run: peotry run pylint
+
+      - name: Bandit
+        if: success() || failure()
+        run: peotry run bandit -c pyproject.toml -r .
+
       - name: Pytest
+        if: success() || failure()
         run: poetry run pytest --junitxml=${{ github.workspace }}/pytest_report.xml || [ $? = 1 ]
         env:
           BOUM_SDK_TEST_EMAIL: boum.sdk.test.user@boum.garden
@@ -60,19 +68,11 @@ jobs:
           BOUM_SDK_TEST_BASE_URL: https://api-dev.boum.us
           BOUM_SDK_TEST_USER_ID: 7XDADsQ9FYS0EusHZiZIBMeUerQ2
 
-      - name: Publish pytest iot-backend report
-        id: publish-pytest-iot-backend-report
+      - name: Publish pytest report
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
-        if: success() || failure()
         with:
           files: ${{ github.workspace }}/pytest_report.xml
-          check_name: Pytest Results - IoT Backend
+          check_name: Pytest Results
 
-      - name: Pylint
-        if: success() || failure()
-        run: peotry run pylint
 
-      - name: Bandit
-        if: success() || failure()
-        run: peotry run bandit
 
