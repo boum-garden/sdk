@@ -52,11 +52,11 @@ jobs:
       - run: poetry install --no-interaction
 
       - name: Pylint
-        run: peotry run pylint
+        run: poetry run pylint
 
       - name: Bandit
         if: success() || failure()
-        run: peotry run bandit -c pyproject.toml -r .
+        run: poetry run bandit -c pyproject.toml -r .
 
       - name: Pytest
         if: success() || failure()
