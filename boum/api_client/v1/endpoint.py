@@ -163,9 +163,9 @@ class Endpoint(ABC):
 
     # noinspection PyArgumentList
     @_request_handler
-    def _get(self, query_parameters: dict = None):
+    def _get(self, payload: dict = None, query_parameters: dict = None):
         """Send a GET request to the endpoint."""
-        return self._session.get(url=self.url, params=query_parameters)
+        return self._session.get(url=self.url, json=payload, params=query_parameters)
 
     # noinspection PyArgumentList
     @_request_handler
@@ -187,6 +187,6 @@ class Endpoint(ABC):
 
     # noinspection PyArgumentList
     @_request_handler
-    def _delete(self, query_parameters: dict = None):
+    def _delete(self, payload: dict = None, query_parameters: dict = None):
         """Send a DELETE request to the endpoint."""
-        return self._session.delete(url=self.url, params=query_parameters)
+        return self._session.delete(url=self.url, json=payload, params=query_parameters)

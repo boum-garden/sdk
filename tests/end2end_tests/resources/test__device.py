@@ -1,9 +1,11 @@
+import random
 from datetime import datetime, timedelta, time
 
 import pytest
 
 from boum.api_client import constants
 from boum.api_client.v1.client import ApiClient
+from boum.api_client.v1.models import DeviceStateModel
 from boum.resources.device import Device
 from tests.end2end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID
 
@@ -27,30 +29,19 @@ class TestGetDeviceIds:
             assert DEVICE_ID in result
 
 
-class TestGetSetDeviceState:
+class TestDeviceState:
     def test__get_and_set_pump_state__works(self, client, device):
-        value = True
+        desired_state_in = DeviceStateModel(
+            pump_state=random.choice([True, False]),
+            refill_time=time(random.randint(0, 23), random.randint(0, 59)),
+            refill_interval=random.randint(0, 10),
+            max_pump_duration=random.randint(0, 10),
+        )
         with client:
-            device.set_pump_state(value)
-            reported, desired = device.get_pump_state()
-            assert isinstance(reported, bool)
-            assert desired == value
-
-    def test__get_and_set_refill_time__works(self, client, device):
-        value = time(3, 32)
-        with client:
-            device.set_refill_time(value)
-            reported, desired = device.get_refill_time()
-            assert isinstance(reported, time)
-            assert desired == value
-
-    def test__get_and_set_refill_interval__works(self, client, device):
-        value = 3
-        with client:
-            device.set_refill_interval(value)
-            reported, desired = device.get_refill_interval()
-            assert isinstance(reported, int | None)
-            assert desired == value
+            device.set_desired_device_state(desired_state_in)
+            reported_state_out, desired_state_out = device.get_device_states()
+            assert desired_state_in == desired_state_out
+            assert isinstance(reported_state_out, DeviceStateModel)
 
 
 class TestDeviceData:

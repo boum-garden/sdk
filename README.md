@@ -24,15 +24,15 @@ endpoint paths. Email and password are required to use it.
 
 ```python
 >>> from boum.api_client.v1.client import ApiClient
->>> from boum.api_client.v1.models.device_state import DeviceState
+>>> from boum.api_client.v1.models import DeviceModel
 >>>
 >>> with ApiClient(email, password, base_url=base_url) as client:
 ...     # Get call to the devices collection
-...     evice_ids = client.root.devices.get()
+...     device_ids = client.root.devices.get()
 ...     # Get call to a specific device 
 ...     device_states = client.root.devices(device_id).get()
 ...     # Patch call to a specific device
-...     client.root.devices(device_id).patch(DeviceState())
+...     client.root.devices(device_id).patch(DeviceModel())
 ...     # Get call to a devices data
 ...     data = client.root.devices(device_id).data.get()
 
@@ -49,28 +49,27 @@ The resource abstractions provide an intuitive interface to interact with the un
 >>> import pandas as pd
 >>> from boum.api_client.v1.client import ApiClient
 >>> from boum.resources.device import Device
+>>> from boum.api_client.v1.models import DeviceStateModel
 >>>
 >>> with ApiClient(email, password, base_url=base_url) as client:
 ...    # Get available device ids
 ...    device_ids = Device.get_device_ids(client)
 ...    # Create a device instance
-...    device = Device(device_id, client)        
+...    device = Device(device_id, client)
 ...    # Remove device claim
-...    device.unclaim()
+...    # device.unclaim()
 ...    # Claim a device
-...    device.claim()
-...    # Set the pump state
-...    device.set_pump_state(True)  # True for on, False for off 
-...    # Get the pump state
-...    reported, desired = device.get_pump_state()
-...    # Set the refill time
-...    device.set_refill_time(time(8, 0))
-...    # Get the refill time
-...    reported, desired = device.get_refill_time()
-...    # Set the refill interval
-...    device.set_refill_interval(3)
-...    # Get the refill interval
-...    reported, desired = device.get_refill_interval()
+...    # device.claim()
+...    # Set desired device state
+...    desired_device_State = DeviceStateModel(
+...        pump_state=True,
+...        refill_time=time(3, 32),
+...        refill_interval=3,
+...        max_pump_duration=5
+...    )
+...    device.set_desired_device_state(desired_device_State)
+...    # Get reported and desired device state
+...    reported, desired = device.get_device_states()
 ...    # Get device telemetry data
 ...    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1),
 ...        end=datetime.now())

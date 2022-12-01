@@ -2,8 +2,7 @@ from datetime import datetime
 
 from boum.api_client import constants
 from boum.api_client.v1.endpoint import Endpoint
-from boum.api_client.v1.models.device_state import DeviceState
-from boum.api_client.v1.models.user_details import UserDetails
+from boum.api_client.v1.models import DeviceModel, UserModel
 
 
 class ApiClient:
@@ -25,19 +24,18 @@ class ApiClient:
 
         Example
         -------
-            >>> from boum.api_client import constants
-            >>> from boum.api_client.v1.models.device_state import DeviceState
-            >>> from boum.api_client.v1.client import ApiClient, RootEndpoint
+            >>> from boum.api_client.v1.client import ApiClient
+            >>> from boum.api_client.v1.models import DeviceModel
             >>>
             >>> with ApiClient(email, password, base_url=base_url) as client:
             ...     # Get call to the devices collection
             ...     device_ids = client.root.devices.get()
             ...     # Get call to a specific device
-            ...     device_states = client.root.devices(device_ids[0]).get()
+            ...     device_states = client.root.devices(device_id).get()
             ...     # Patch call to a specific device
-            ...     client.root.devices(device_ids[0]).patch(DeviceState())
+            ...     client.root.devices(device_id).patch(DeviceModel())
             ...     # Get call to a devices data
-            ...     data = client.root.devices(device_ids[0]).data.get()
+            ...     data = client.root.devices(device_id).data.get()
         """
 
     def __init__(
@@ -181,31 +179,29 @@ class DevicesEndpoint(Endpoint):
     def __get__(self, instance, owner: type) -> "DevicesEndpoint":
         return super().__get__(instance, owner)
 
-    def post(self):
+    def post(self) -> str:
         if self.resource_id:
             raise ValueError('Cannot post to a specific device')
         response = self._post()
         data = response.json()['data']
         return data['deviceId']
 
-    def get(self):
+    def get(self) -> list[str] | DeviceModel:
         response = self._get()
         data = response.json()['data']
         if not self.resource_id:
             return [d['id'] for d in data]
 
-        desired_device_state = DeviceState.from_payload(data['desired'])
-        reported_device_state = DeviceState.from_payload(data['reported'])
-        return reported_device_state, desired_device_state
+        device_model = DeviceModel.from_payload(data)
+        return device_model
 
-    def patch(self, desired_device_state: DeviceState):
+    def patch(self, device_model: DeviceModel):
         if not self.resource_id:
             raise ValueError('Cannot patch a collection of devices')
-        if not isinstance(desired_device_state, DeviceState):
-            raise ValueError('desired_device_state must be a DeviceState')
+        if not isinstance(device_model, DeviceModel):
+            raise ValueError('device_model must be a DeviceModel')
 
-        payload = desired_device_state.to_payload()
-
+        payload = device_model.to_payload()
         self._patch(payload)
 
     def delete(self):
@@ -220,10 +216,10 @@ class UsersEndpoint(Endpoint):
     def __get__(self, instance, owner: type) -> "UsersEndpoint":
         return super().__get__(instance, owner)
 
-    def get(self) -> UserDetails:
+    def get(self) -> UserModel:
         response = self._get()
         payload = response.json()['data']
-        return UserDetails.from_payload(payload)
+        return UserModel.from_payload(payload)
 
 
 class RootEndpoint(Endpoint):

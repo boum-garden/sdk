@@ -1,7 +1,7 @@
-from datetime import datetime, time
+from datetime import datetime
 
 from boum.api_client.v1.client import ApiClient
-from boum.api_client.v1.models.device_state import DeviceState
+from boum.api_client.v1.models import DeviceStateModel, DeviceModel
 
 
 class Device:
@@ -18,6 +18,7 @@ class Device:
         >>> import pandas as pd
         >>> from boum.api_client.v1.client import ApiClient
         >>> from boum.resources.device import Device
+        >>> from boum.api_client.v1.models import DeviceStateModel
         >>>
         >>> with ApiClient(email, password, base_url=base_url) as client:
         ...    # Get available device ids
@@ -25,21 +26,19 @@ class Device:
         ...    # Create a device instance
         ...    device = Device(device_id, client)
         ...    # Remove device claim
-        ...    device.unclaim()
+        ...    # device.unclaim()
         ...    # Claim a device
-        ...    device.claim()
-        ...    # Set the pump state
-        ...    device.set_pump_state(True)  # True for on, False for off
-        ...    # Get the pump state
-        ...    reported, desired = device.get_pump_state()
-        ...    # Set the refill time
-        ...    device.set_refill_time(time(8, 0))
-        ...    # Get the refill time
-        ...    reported, desired = device.get_refill_time()
-        ...    # Set the refill interval
-        ...    device.set_refill_interval(3)
-        ...    # Get the refill interval
-        ...    reported, desired = device.get_refill_interval()
+        ...    # device.claim()
+        ...    # Set desired device state
+        ...    desired_device_State = DeviceStateModel(
+        ...        pump_state=True,
+        ...        refill_time=time(3, 32),
+        ...        refill_interval=3,
+        ...        max_pump_duration=5
+        ...    )
+        ...    device.set_desired_device_state(desired_device_State)
+        ...    # Get reported and desired device state
+        ...    reported, desired = device.get_device_states()
         ...    # Get device telemetry data
         ...    data = device.get_telemetry_data(start=datetime.now() - timedelta(days=1),
         ...        end=datetime.now())
@@ -75,82 +74,28 @@ class Device:
         """
         return api_client.root.devices.get()
 
-    def _set_desired_device_state(self, desired_device_state: DeviceState):
-        self._api_client.root.devices(self.device_id).patch(desired_device_state)
-
-    def _get_device_states(self) -> (DeviceState, DeviceState):
-        return self._api_client.root.devices(self.device_id).get()
-
-    def get_pump_state(self) -> (bool, bool):
+    def set_desired_device_state(self, desired_device_state: DeviceStateModel):
         """
-        Get the pump state. Reported and desired values are returned as a tuple.
-
-        Returns
-        -------
-            tuple[bool, bool]
-        """
-        reported, desired = self._get_device_states()
-        return reported.pump_state, desired.pump_state
-
-    def set_pump_state(self, value: bool):
-        """
-        Set the pump state.
+        Set the desired device state.
 
         Parameters
         ----------
-            value
-                True for on, False for off
+            desired_device_state
+                The desired device state
         """
-        desired = DeviceState(pump_state=value)
-        self._set_desired_device_state(desired)
+        device_model = DeviceModel(desired_device_state)
+        self._api_client.root.devices(self.device_id).patch(device_model)
 
-    # noinspection PyTypeChecker
-    def get_refill_time(self) -> (time, time):
+    def get_device_states(self) -> (DeviceStateModel, DeviceStateModel):
         """
-        Get the refill time. Reported and desired values are returned as a tuple.
-
-        Returns
-        -------
-            tuple[time, time]
-        """
-        reported, desired = self._get_device_states()
-        return reported.refill_time, desired.refill_time
-
-    def set_refill_time(self, value: time):
-        """
-        Set the refill time.
-
-        Parameters
-        ----------
-            value
-                The time to refill the device
-        """
-        desired = DeviceState(refill_time=value)
-        self._set_desired_device_state(desired)
-
-    # noinspection PyTypeChecker
-    def get_refill_interval(self) -> (int, int):
-        """
-        Get the refill interval. Reported and desired values are returned as a tuple.
+        Get the reported and desired device state.
 
         Returns
         -------
-            tuple[int, int]
+            a tuple with the reported and desired device states
         """
-        reported, desired = self._get_device_states()
-        return reported.refill_interval, desired.refill_interval
-
-    def set_refill_interval(self, days: int):
-        """
-        Set the refill interval.
-
-        Parameters
-        ----------
-            days
-                The number of days between refills
-        """
-        desired = DeviceState(refill_interval=days)
-        self._set_desired_device_state(desired)
+        device_model = self._api_client.root.devices(self.device_id).get()
+        return device_model.reported_state, device_model.desired_state
 
     def get_telemetry_data(self, start: datetime = None, end: datetime = None) -> dict[str, list]:
         """
