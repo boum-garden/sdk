@@ -20,7 +20,7 @@ The package is available on PyPI, and can be installed with pip or similar tools
 
 ### API Client
 The API client models the topology of the API and provides a class hierarchy that is organized in the same way as the 
-endpoint paths. Email and password are required to use it.
+endpoint paths. Email and password or a token are required to use it.
 
 ```python
 >>> from boum.api_client.v1.client import ApiClient
@@ -42,7 +42,7 @@ Note that using multiple instances of the client is not intended and will result
 
 
 ### Resource Abstractions
-The resource abstractions provide an intuitive interface to interact with the underlying resources.
+The resource abstractions provide a more intuitive interface to interact with the underlying resources.
 
 ```python
 >>> from datetime import time, datetime, timedelta
@@ -82,11 +82,12 @@ The resource abstractions provide an intuitive interface to interact with the un
 ## Development
 
 ### Dependecy management
-[Poetry](https://python-poetry.org/) is used for depency management and publishing flow.
+[Poetry](https://python-poetry.org/) is used for depency management and publishing.
 
 ### Versioning
 Versioning is done using [bumpver](https://pypi.org/project/bumpver/) 
 with [semantic versioning](https://semver.org/)
+When the version is updated, a new tag is created and pushed to the remote repository.
 
 
 ### Testing
@@ -103,6 +104,8 @@ API Base URL, email and password are required as environmental variables.
     BOUM_SDK_TEST_BASE_URL
     BOUM_SDK_TEST_EMAIL
     BOUM_SDK_TEST_PASSWORD
+    BOUM_SDK_TEST_DEVICE_ID
+    BOUM_SDK_TEST_USER_ID
 ```
 
 #### Doctests
@@ -110,6 +113,40 @@ API Base URL, email and password are required as environmental variables.
 Part of the end-to-end tests are document tests executed using 
 [doctest](https://docs.python.org/3/library/doctest.html). 
 These tests ensure that all the examples in this README and in the docstrings are up-to-date and working.
+
+
+## CI/CD
+
+### Integration
+
+The GitHub action workflow `.github/workflows/checks_on_push_to_branch.yml` is triggered on every push on a branch
+except main. It provides the following checks:
+
+- Unit and end-to-end/contract tests with pytest
+- Linting with pylint
+- Security checks with bandit
+
+The repository settings require that all checks pass before a pull request can be merged.
+
+### Deployment
+
+The GitHub action workflow `.github/workflows/deploy_on_push_to_main.yml` is triggered on every push to main. It runs a
+test deployment to the test PyPI repository.
+
+The GitHub action workflow `.github/workflows/deploy_on_release.yml` is triggered on a tag with the format `v*.*.*` and
+runs a deployment to the production PyPI. It is recommended to set these tags using the GitHub release feature. 
+
+
+## Technical debt
+
+- Most tests currently require an instance of the API to run against. This is not ideal and should either be replaced
+  with fake instances or mocked calls.
+
+- Creating multiple instances of the API client is not intended and will result in unexpected behavior. This should be 
+  addressed by making the client a singleton.
+
+- Doctest requires a specific format to make examples in documentation executable. This makes the examples in this
+  README harder to copy and paste. 
 
 
 
