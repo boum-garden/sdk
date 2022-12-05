@@ -134,6 +134,10 @@ class Endpoint(ABC):
         def wrapper(self, *args, **kwargs):
 
             def execute_and_parse():
+
+                if not self._session:
+                    raise RuntimeError('Endpoints are not connected to the API')
+
                 response = func(self, *args, **kwargs)
                 try:
                     message = response.json().get('message')
