@@ -20,7 +20,10 @@ class Device:
         >>> from boum.resources.device import Device
         >>> from boum.api_client.v1.models import DeviceStateModel
         >>>
-        >>> with ApiClient(email, password, base_url=base_url) as client:
+        >>> client = ApiClient(email, password, base_url=base_url)
+        >>> # or ApiClient(refresh_token='token', base_url=base_url)
+        >>>
+        >>> with client:
         ...    # Get available device ids
         ...    device_ids = Device.get_device_ids(client)
         ...    # Create a device instance

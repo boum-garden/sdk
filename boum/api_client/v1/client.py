@@ -27,7 +27,10 @@ class ApiClient:
             >>> from boum.api_client.v1.client import ApiClient
             >>> from boum.api_client.v1.models import DeviceModel
             >>>
-            >>> with ApiClient(email, password, base_url=base_url) as client:
+            >>> client = ApiClient(email, password, base_url=base_url)
+            >>> # or ApiClient(refresh_token='token', base_url=base_url)
+            >>>
+            >>> with client:
             ...     # Get call to the devices collection
             ...     device_ids = client.root.devices.get()
             ...     # Get call to a specific device

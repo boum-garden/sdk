@@ -25,8 +25,11 @@ endpoint paths. Email and password or a token are required to use it.
 ```python
 >>> from boum.api_client.v1.client import ApiClient
 >>> from boum.api_client.v1.models import DeviceModel
+>>> 
+>>> client = ApiClient(email, password, base_url=base_url)
+>>> # or ApiClient(refresh_token='token', base_url=base_url)
 >>>
->>> with ApiClient(email, password, base_url=base_url) as client:
+>>> with client:
 ...     # Get call to the devices collection
 ...     device_ids = client.root.devices.get()
 ...     # Get call to a specific device 
@@ -51,7 +54,10 @@ The resource abstractions provide a more intuitive interface to interact with th
 >>> from boum.resources.device import Device
 >>> from boum.api_client.v1.models import DeviceStateModel
 >>>
->>> with ApiClient(email, password, base_url=base_url) as client:
+>>> client = ApiClient(email, password, base_url=base_url)
+>>> # or ApiClient(refresh_token='token', base_url=base_url)
+>>>
+>>> with client:
 ...    # Get available device ids
 ...    device_ids = Device.get_device_ids(client)
 ...    # Create a device instance
@@ -78,6 +84,8 @@ The resource abstractions provide a more intuitive interface to interact with th
 
 ```
 
+### Loging
+The SDK uses the standard python logging module.
 
 ## Development
 
