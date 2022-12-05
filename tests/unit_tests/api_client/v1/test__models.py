@@ -1,5 +1,6 @@
 from datetime import time
 
+import pytest
 from boum.api_client.v1.models import DeviceStateModel, DeviceModel
 
 
@@ -76,3 +77,42 @@ class TestDeviceModel:
         result = device_model.to_payload()
 
         assert result == {'state': {'reported': {}}}
+
+
+class TestDeviceStateModel:
+
+    @pytest.mark.parametrize('value', [-1, 0, 24 * 60, '10', time(0, 0)])
+    def test__max_pump_duration_minutes_invalid__raises_value_error(self, value):
+        with pytest.raises(ValueError):
+            DeviceStateModel(max_pump_duration_minutes=value)
+
+    def test__max_pump_duration_minutes_none__works(self):
+        result = DeviceStateModel(max_pump_duration_minutes=None)
+        assert result.max_pump_duration_minutes is None
+
+    @pytest.mark.parametrize('value', [-1, '10', time(0, 0)])
+    def test__refill_interval_days_invalid__raises_value_error(self, value):
+        with pytest.raises(ValueError):
+            DeviceStateModel(refill_interval_days=value)
+
+    def test__refill_interval_days_none__works(self):
+        result = DeviceStateModel(refill_interval_days=None)
+        assert result.refill_interval_days is None
+
+    @pytest.mark.parametrize('value', [-1, 1, '10', '10:33'])
+    def test__refill_time_invalid__raises_value_error(self, value):
+        with pytest.raises(ValueError):
+            DeviceStateModel(refill_time=value)
+
+    def test__refill_time_none__works(self):
+        result = DeviceStateModel(refill_time=None)
+        assert result.refill_time is None
+
+    @pytest.mark.parametrize('value', [-1, 1, '10', time(0, 0)])
+    def test__pump_state_invalid__raises_value_error(self, value):
+        with pytest.raises(ValueError):
+            DeviceStateModel(pump_state=value)
+
+    def test__pump_state_none__works(self):
+        result = DeviceStateModel(pump_state=None)
+        assert result.pump_state is None

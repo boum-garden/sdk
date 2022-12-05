@@ -9,12 +9,14 @@ class Model(ABC):
 
     @abstractmethod
     def to_payload(self) -> dict[str, any]:
-        pass
+        """Convert the model to a dictionary with strings as keys and any type as values."""
+
 
     @staticmethod
     @abstractmethod
     def from_payload(payload: dict[str, any]) -> 'Model':
-        pass
+        """Convert a dictionary with strings as keys values to a model."""
+
 
 
 @dataclass
@@ -40,6 +42,25 @@ class DeviceStateModel(Model):
     refill_interval_days: int | None = None
     max_pump_duration_minutes: int | None = None
     pump_state: bool | None = None
+
+    def __post_init__(self):
+        """Value validation after initialization"""
+        if not isinstance(self.refill_time, time | None):
+            raise ValueError('refill_time must be a time object or None')
+
+        if not isinstance(self.refill_interval_days, int | None):
+            raise ValueError('refill_interval_days must be an int or None')
+        if self.refill_interval_days is not None and self.refill_interval_days <= 0:
+            raise ValueError('refill_intervall must be positive')
+
+        if not isinstance(self.max_pump_duration_minutes, int | None):
+            raise ValueError('max_pump_duration_minutes must be an int or None')
+        if self.max_pump_duration_minutes is not None and \
+                not 0 < self.max_pump_duration_minutes < 24 * 60 - 1:
+            raise ValueError('max_pump_duration_minutes must be between 0 and 1439 or None')
+
+        if not isinstance(self.pump_state, bool | None):
+            raise ValueError('pump_state must be a bool or None')
 
     def to_payload(self) -> dict[str, any]:
         payload = {}
