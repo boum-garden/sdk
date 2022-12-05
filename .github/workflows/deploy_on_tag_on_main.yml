@@ -1,5 +1,5 @@
 
-name: Test deployment on push to main
+name: Deployment on push to main
 
 on:
   push:

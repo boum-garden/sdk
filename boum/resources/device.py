@@ -33,8 +33,8 @@ class Device:
         ...    desired_device_State = DeviceStateModel(
         ...        pump_state=True,
         ...        refill_time=time(3, 32),
-        ...        refill_interval=3,
-        ...        max_pump_duration=5
+        ...        refill_interval_days=3,
+        ...        max_pump_duration_minutes=5
         ...    )
         ...    device.set_desired_device_state(desired_device_State)
         ...    # Get reported and desired device state

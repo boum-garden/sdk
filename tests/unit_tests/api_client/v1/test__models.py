@@ -20,14 +20,14 @@ class TestDeviceModel:
         result = DeviceModel.from_payload(payload)
 
         assert result.reported_state.pump_state is False
-        assert result.reported_state.max_pump_duration == 10
-        assert result.reported_state.refill_interval == 3
+        assert result.reported_state.max_pump_duration_minutes == 10
+        assert result.reported_state.refill_interval_days == 3
         assert result.reported_state.refill_time == time(1, 53)
 
         assert result.desired_state.pump_state
-        assert result.desired_state.max_pump_duration == 11
+        assert result.desired_state.max_pump_duration_minutes == 11
         assert result.desired_state.refill_time == time(0, 0)
-        assert result.desired_state.refill_interval == 4
+        assert result.desired_state.refill_interval_days == 4
 
     def test__from_payload_empty__works(self):
         payload = {'desired': {}, 'reported': {}}
@@ -35,14 +35,14 @@ class TestDeviceModel:
         result = DeviceModel.from_payload(payload)
 
         assert result.reported_state.pump_state is None
-        assert result.reported_state.max_pump_duration is None
-        assert result.reported_state.refill_interval is None
+        assert result.reported_state.max_pump_duration_minutes is None
+        assert result.reported_state.refill_interval_days is None
         assert result.reported_state.refill_time is None
 
         assert result.desired_state.pump_state is None
-        assert result.desired_state.max_pump_duration is None
+        assert result.desired_state.max_pump_duration_minutes is None
         assert result.desired_state.refill_time is None
-        assert result.desired_state.refill_interval is None
+        assert result.desired_state.refill_interval_days is None
 
     def test__from_payload_none__works(self):
         payload = {}
@@ -55,8 +55,8 @@ class TestDeviceModel:
     def test__to_payload_complete__works(self):
         device_model = DeviceModel(
             DeviceStateModel(
-                max_pump_duration=10, pump_state=False,
-                refill_time=time(1, 53), refill_interval=3)
+                max_pump_duration_minutes=10, pump_state=False,
+                refill_time=time(1, 53), refill_interval_days=3)
         )
 
         result = device_model.to_payload()

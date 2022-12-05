@@ -63,8 +63,8 @@ class TestDevicesEndpoint:
         desired_state_in = DeviceStateModel(
             pump_state=pump_state,
             refill_time=time(random.randint(0, 23), random.randint(0, 59)),
-            refill_interval=random.randint(0, 10),
-            max_pump_duration=random.randint(0, 10),
+            refill_interval_days=random.randint(0, 10),
+            max_pump_duration_minutes=random.randint(0, 10),
         )
         device_model_in = DeviceModel(desired_state_in)
 

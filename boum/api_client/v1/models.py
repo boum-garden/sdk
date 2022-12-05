@@ -37,18 +37,18 @@ class UserModel(Model):
 @dataclass
 class DeviceStateModel(Model):
     refill_time: time | None = None
-    refill_interval: int | None = None
-    max_pump_duration: int | None = None
+    refill_interval_days: int | None = None
+    max_pump_duration_minutes: int | None = None
     pump_state: bool | None = None
 
     def to_payload(self) -> dict[str, any]:
         payload = {}
         if self.refill_time is not None:
             payload['refillTime'] = self.refill_time.strftime('%H:%M')
-        if self.refill_interval is not None:
-            payload['refillInterval'] = f'{self.refill_interval}days'
-        if self.max_pump_duration is not None:
-            payload['maxPumpDuration'] = f'{self.max_pump_duration}min'
+        if self.refill_interval_days is not None:
+            payload['refillInterval'] = f'{self.refill_interval_days}days'
+        if self.max_pump_duration_minutes is not None:
+            payload['maxPumpDuration'] = f'{self.max_pump_duration_minutes}min'
         if self.pump_state is not None:
             payload['pumpState'] = 'on' if self.pump_state else 'off'
         return payload
@@ -57,8 +57,8 @@ class DeviceStateModel(Model):
     def from_payload(payload: dict[str, any]) -> 'DeviceStateModel':
         return DeviceStateModel(
             refill_time=DeviceStateModel._parse_refill_time(payload),
-            refill_interval=DeviceStateModel._parse_refill_interval(payload),
-            max_pump_duration=DeviceStateModel._parse_max_pump_duration(payload),
+            refill_interval_days=DeviceStateModel._parse_refill_interval(payload),
+            max_pump_duration_minutes=DeviceStateModel._parse_max_pump_duration(payload),
             pump_state=DeviceStateModel._parse_pump_state(payload)
         )
 
