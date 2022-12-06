@@ -30,6 +30,9 @@ class EndpointB(Endpoint):
     def __get__(self, instance, owner: type) -> "UsersEndpoint":
         return super().__get__(instance, owner)
 
+    def get(self):
+        return self._get()
+
 
 class EndpointRoot(Endpoint):
     endpoint_a = EndpointA('a')
@@ -63,29 +66,8 @@ def test__create_with_resource_ids__urls_are_correct():
     assert root.endpoint_b('5').endpoint_d('6').url == 'base/b/5/d/6'
 
 
-def test__connect_root__all_endpoints_are_connected():
-    root = EndpointRoot('base', '/')
-    root.connect()
-
-    assert root.is_connected()
-    assert root.endpoint_a.is_connected()
-    assert root.endpoint_a.endpoint_c.is_connected()
-    assert root.endpoint_b.is_connected()
-    assert root.endpoint_a('1').is_connected()
-    assert root.endpoint_a.endpoint_c('2').is_connected()
-    assert root.endpoint_b('3').is_connected()
-    assert root.endpoint_b('5').endpoint_d.is_connected()
-
-
-def test__disconnect_root__all_endpoints_are_disconnected():
-    root = EndpointRoot('base', '/')
-    root.connect()
-    root.disconnect()
-
-    assert not root.is_connected()
-    assert not root.endpoint_a.is_connected()
-    assert not root.endpoint_a.endpoint_c.is_connected()
-    assert not root.endpoint_b.is_connected()
-    assert not root.endpoint_a('1').is_connected()
-    assert not root.endpoint_a.endpoint_c('2').is_connected()
-    assert not root.endpoint_b('3').is_connected()
+def test__request_attempt_with_not_connected_endpoint__raises_runtime_error():
+    root = EndpointRoot('base')
+    root.set_session(None)
+    with pytest.raises(RuntimeError):
+        root.endpoint_b('1').get()

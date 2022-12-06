@@ -25,8 +25,11 @@ endpoint paths. Email and password or a token are required to use it.
 ```python
 >>> from boum.api_client.v1.client import ApiClient
 >>> from boum.api_client.v1.models import DeviceModel
+>>> 
+>>> client = ApiClient(email, password, base_url=base_url)
+>>> # or ApiClient(refresh_token='token', base_url=base_url)
 >>>
->>> with ApiClient(email, password, base_url=base_url) as client:
+>>> with client:
 ...     # Get call to the devices collection
 ...     device_ids = client.root.devices.get()
 ...     # Get call to a specific device 
@@ -51,7 +54,10 @@ The resource abstractions provide a more intuitive interface to interact with th
 >>> from boum.resources.device import Device
 >>> from boum.api_client.v1.models import DeviceStateModel
 >>>
->>> with ApiClient(email, password, base_url=base_url) as client:
+>>> client = ApiClient(email, password, base_url=base_url)
+>>> # or ApiClient(refresh_token='token', base_url=base_url)
+>>>
+>>> with client:
 ...    # Get available device ids
 ...    device_ids = Device.get_device_ids(client)
 ...    # Create a device instance
@@ -64,8 +70,8 @@ The resource abstractions provide a more intuitive interface to interact with th
 ...    desired_device_State = DeviceStateModel(
 ...        pump_state=True,
 ...        refill_time=time(3, 32),
-...        refill_interval=3,
-...        max_pump_duration=5
+...        refill_interval_days=3,
+...        max_pump_duration_minutes=5
 ...    )
 ...    device.set_desired_device_state(desired_device_State)
 ...    # Get reported and desired device state
@@ -78,6 +84,11 @@ The resource abstractions provide a more intuitive interface to interact with th
 
 ```
 
+### Jupyter Notebook Demo
+A Jupyter notebook demo is available here [here](doc/boum-sdk-demo.ipynb).
+
+### Loging
+The SDK uses the standard python logging module.
 
 ## Development
 
@@ -139,14 +150,15 @@ runs a deployment to the production PyPI. It is recommended to set these tags us
 
 ## Technical debt
 
-- Most tests currently require an instance of the API to run against. This is not ideal and should either be replaced
-  with fake instances or mocked calls.
+- Tests of resource abstractions are erquire currently a running instance of the API. This should be mocked.
 
 - Creating multiple instances of the API client is not intended and will result in unexpected behavior. This should be 
   addressed by making the client a singleton.
 
 - Doctest requires a specific format to make examples in documentation executable. This makes the examples in this
-  README harder to copy and paste. 
+  README harder to copy and paste. There exist other packages and add-ons that could be used to make the examples easier 
+  to manage.
+
 
 
 

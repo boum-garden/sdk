@@ -20,7 +20,10 @@ class Device:
         >>> from boum.resources.device import Device
         >>> from boum.api_client.v1.models import DeviceStateModel
         >>>
-        >>> with ApiClient(email, password, base_url=base_url) as client:
+        >>> client = ApiClient(email, password, base_url=base_url)
+        >>> # or ApiClient(refresh_token='token', base_url=base_url)
+        >>>
+        >>> with client:
         ...    # Get available device ids
         ...    device_ids = Device.get_device_ids(client)
         ...    # Create a device instance
@@ -33,8 +36,8 @@ class Device:
         ...    desired_device_State = DeviceStateModel(
         ...        pump_state=True,
         ...        refill_time=time(3, 32),
-        ...        refill_interval=3,
-        ...        max_pump_duration=5
+        ...        refill_interval_days=3,
+        ...        max_pump_duration_minutes=5
         ...    )
         ...    device.set_desired_device_state(desired_device_State)
         ...    # Get reported and desired device state

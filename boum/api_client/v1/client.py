@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import requests
+
 from boum.api_client import constants
 from boum.api_client.v1.endpoint import Endpoint
 from boum.api_client.v1.models import DeviceModel, UserModel
@@ -27,7 +29,10 @@ class ApiClient:
             >>> from boum.api_client.v1.client import ApiClient
             >>> from boum.api_client.v1.models import DeviceModel
             >>>
-            >>> with ApiClient(email, password, base_url=base_url) as client:
+            >>> client = ApiClient(email, password, base_url=base_url)
+            >>> # or ApiClient(refresh_token='token', base_url=base_url)
+            >>>
+            >>> with client:
             ...     # Get call to the devices collection
             ...     device_ids = client.root.devices.get()
             ...     # Get call to a specific device
@@ -40,7 +45,7 @@ class ApiClient:
 
     def __init__(
             self, email: str = None, password: str = None, refresh_token: str = None, base_url:
-            str = constants.API_URL_PROD, ):
+            str = constants.API_URL_PROD, session: requests.Session = requests.Session()):
         """
         Parameters
         ----------
@@ -56,16 +61,30 @@ class ApiClient:
 
         if not (email and password) and not refresh_token:
             raise ValueError('Either email and password or refresh_token must be set')
-        ApiClient._instance = self
-        self.root = RootEndpoint(base_url + '/v1', refresh_access_token=self._refresh_access_token)
         self._email = email
         self._password = password
         self._refresh_token = refresh_token
 
+        self.__access_token: str | None = None
+
+        self._session = session
+        self.root = RootEndpoint(base_url + '/v1', refresh_access_token=self._refresh_access_token)
+
+    @property
+    def _access_token(self) -> str | None:
+        return self.__access_token
+
+    @_access_token.setter
+    def _access_token(self, value: str | None):
+        self.__access_token = value
+        self._session.headers.update({'Authorization': f'{self.__access_token}'})
+
     def __enter__(self) -> "ApiClient":
         """Connect to the API and sign in or refresh the access token."""
-        self.root.connect()
-        if self._refresh_token:
+        self.root.set_session(self._session)
+        if self._access_token:
+            pass
+        elif self._refresh_token:
             self._refresh_access_token()
         else:
             self._signin()
@@ -73,19 +92,17 @@ class ApiClient:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Disconnect from the API."""
-        self.root.disconnect()
+        self._session.close()
 
     def _signin(self):
-        access_token, self._refresh_token = self.root.auth.signin.post(
+        self._access_token, self._refresh_token = self.root.auth.signin.post(
             self._email, self._password)
-        self.root.set_access_token(access_token)
 
     def _refresh_access_token(self):
         if not self._refresh_token:
             raise AttributeError('Refresh token not set')
 
-        access_token = self.root.auth.token.post(self._refresh_token)
-        self.root.set_access_token(access_token)
+        self._access_token = self.root.auth.token.post(self._refresh_token)
 
 
 class AuthTokenEndpoint(Endpoint):
