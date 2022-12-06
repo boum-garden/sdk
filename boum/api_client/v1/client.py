@@ -45,7 +45,7 @@ class ApiClient:
 
     def __init__(
             self, email: str = None, password: str = None, refresh_token: str = None, base_url:
-            str = constants.API_URL_PROD, ):
+            str = constants.API_URL_PROD, session: requests.Session = requests.Session()):
         """
         Parameters
         ----------
@@ -67,7 +67,7 @@ class ApiClient:
 
         self.__access_token: str | None = None
 
-        self._session = requests.Session()
+        self._session = session
         self.root = RootEndpoint(base_url + '/v1', refresh_access_token=self._refresh_access_token)
 
     @property
@@ -84,7 +84,7 @@ class ApiClient:
         self.root.set_session(self._session)
         if self._access_token:
             pass
-        if self._refresh_token:
+        elif self._refresh_token:
             self._refresh_access_token()
         else:
             self._signin()
