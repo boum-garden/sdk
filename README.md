@@ -147,18 +147,15 @@ runs a deployment to the production PyPI. It is recommended to set these tags us
 
 ## Technical debt
 
-- Most tests currently require an instance of the API to run against. This is not ideal and should either be replaced
-  with fake instances or mocked calls.
+- Tests of resource abstractions are erquire currently a running instance of the API. This should be mocked.
 
 - Creating multiple instances of the API client is not intended and will result in unexpected behavior. This should be 
   addressed by making the client a singleton.
 
 - Doctest requires a specific format to make examples in documentation executable. This makes the examples in this
-  README harder to copy and paste. 
+  README harder to copy and paste. There exist other packages and add-ons that could be used to make the examples easier 
+  to manage.
 
-- Every time the client context manager is entered, it will create a new session and login anew. This could be sped up
-  by reusing the previously generated access token, as long as that one has not expired. If it has, the token refresh 
-  will be initiated automatically.
 
 
 
