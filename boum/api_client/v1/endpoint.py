@@ -31,7 +31,7 @@ class Endpoint(ABC):
     _session: requests.Session | None = None
     _headers: dict[str, str] = {}
     _refresh_access_token: Callable[[], None] = None
-    _access_token_expired_message = 'AccessTokenExpired' #nosec
+    _access_token_expired_message = 'AccessTokenExpired'  # nosec
 
     def __init__(
             self, path_segment: str, resource_id: str | None = None,
@@ -103,27 +103,9 @@ class Endpoint(ABC):
         return '/'.join(s.strip('/') for s in path_elemets if s)
 
     @classmethod
-    def connect(cls):
-        """Connect all endpoints to the API."""
-        Endpoint._session = requests.Session()
-        Endpoint._session.headers = cls._headers
-
-    @classmethod
-    def disconnect(cls):
-        """Disconnect all endpoints from the API."""
-        Endpoint._session.close()
-        Endpoint._session = None
-
-    @classmethod
-    def is_connected(cls):
-        """Check if the endpoints are connected to the API."""
-        return cls._session is not None
-
-    @classmethod
-    def set_access_token(cls, access_token: str):
-        """Set the access token for the endpoints."""
-        auth_header = {'Authorization': f'{access_token}'}
-        Endpoint._headers.update(auth_header)
+    def set_session(cls, session: requests.Session):
+        """Set the session for all Endpoint instances."""
+        Endpoint._session = session
 
     # noinspection PyMethodParameters
     # pylint: disable=no-self-argument no-member protected-access
