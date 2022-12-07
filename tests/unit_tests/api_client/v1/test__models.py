@@ -1,3 +1,8 @@
+"""
+This model tests the validation of the model classes on isntantiation, the cnoversion into
+payload objects and the conversion from payload objects into model objects.
+"""
+
 from datetime import time
 
 import pytest

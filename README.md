@@ -106,6 +106,9 @@ When the version is updated, a new tag is created and pushed to the remote repos
 #### Unit tests
 These are completely self-contained and have no external dependencies.
 
+IMPORTANT: There are fixtures that model the API responses and expected calls. These mnust be kept up to date with
+the API, otherwise the unit tests will not test the correct behavior.
+
 #### End-to-end tests
 These test the entire flow from user facing python classes to the underlying api calls. They require an instance 
 (fake or real) of the API to run against. They also require a registered user with a clamied device.
@@ -149,8 +152,6 @@ runs a deployment to the production PyPI. It is recommended to set these tags us
 
 
 ## Technical debt
-
-- Tests of resource abstractions are erquire currently a running instance of the API. This should be mocked.
 
 - Creating multiple instances of the API client is not intended and will result in unexpected behavior. This should be 
   addressed by making the client a singleton.

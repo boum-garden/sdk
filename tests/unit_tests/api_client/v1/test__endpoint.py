@@ -1,3 +1,8 @@
+"""
+This module tests the bahaviourof the endpoint class and the construction of endpoint hierarchy
+trees. It doesn't test the actual API calls.
+"""
+
 import pytest
 
 from boum.api_client.v1.endpoint import Endpoint
