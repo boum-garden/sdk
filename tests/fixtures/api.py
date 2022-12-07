@@ -124,18 +124,18 @@ class DevicesWithIdDataGet:
         'timestamp': ['2022-01-02T03:04:05Z', '2023-06-07T08:09:10Z'],
         'someValue': [1, 2]
     }
-    response = create_mock_response(
-        200, data={
-            'details': {
-                'deviceId': DEVICE_ID
-            },
-            'timeSeries': {
-                'someValue': [
-                    {'x': '2022-01-02T03:04:05Z', 'y': 1},
-                    {'x': '2023-06-07T08:09:10Z', 'y': 2}
-                ]
-            }
-        })
+    data = {
+        'details': {
+            'deviceId': DEVICE_ID
+        },
+        'timeSeries': {
+            'someValue': [
+                {'x': '2022-01-02T03:04:05Z', 'y': 1},
+                {'x': '2023-06-07T08:09:10Z', 'y': 2}
+            ]
+        }
+    }
+    response = create_mock_response(200, data=data)
     call_no_args = call(url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None, params={})
     call_time_limit_args = call(
         url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None,
