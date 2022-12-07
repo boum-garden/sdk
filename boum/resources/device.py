@@ -129,12 +129,12 @@ class Device:
             is signed in.
         """
         if user_id:
-            self._api_client.root.devices.claim(user_id).put()
+            self._api_client.root.devices(self.device_id).claim(user_id).put()
         else:
-            self._api_client.root.devices.claim.put()
+            self._api_client.root.devices(self.device_id).claim.put()
 
     def unclaim(self):
         """
         Remove any claim to the device.
         """
-        self._api_client.root.devices.claim.delete()
+        self._api_client.root.devices(self.device_id).claim.delete()
