@@ -7,7 +7,7 @@ IMPORTANT: If these objects don't match the the expected requests and responses 
 can process, the unit test will not test the code in the correct way. Therefore this module has
 kept up-to-date with the API
 """
-from datetime import time, datetime
+from datetime import time, datetime, timedelta
 from unittest.mock import Mock, call
 
 from boum.api_client.v1.models import DeviceStateModel
@@ -118,23 +118,31 @@ class DevicesWithIdClaimDelete:
 class DevicesWithIdDataGet:
     start = datetime(2022, 1, 2, 3, 4, 5)
     end = datetime(2023, 6, 7, 8, 9, 10)
+    interval = timedelta(minutes=11)
     data_clean = expected = {
-            'deviceId': [DEVICE_ID, DEVICE_ID],
-            'timestamp': ['2022-01-02T03:04:05Z', '2023-06-07T08:09:10Z'],
-            'someColumn': [1, 2]
-        }
-    response = create_mock_response(200, data={'data': {
         'deviceId': [DEVICE_ID, DEVICE_ID],
         'timestamp': ['2022-01-02T03:04:05Z', '2023-06-07T08:09:10Z'],
-        'someColumn': [1, 2],
-    }})
-    call_no_args = call(url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None, params=None)
+        'someColumn': [1, 2]
+    }
+    response = create_mock_response(
+        200, data={
+            'details': {
+                'deviceId': DEVICE_ID
+            },
+            'timeSeries': {
+                'someValue': [
+                    {'x': '2022-01-02T03:04:05Z', 'y': 1},
+                    {'x': '2023-06-07T08:09:10Z', 'y': 2}
+                ]
+            }
+        })
+    call_no_args = call(url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None, params={})
     call_time_limit_args = call(
         url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None,
         params={'timeStart': '2022-01-02T03:04:05Z', 'timeEnd': '2023-06-07T08:09:10Z'})
-    # call_interval_args = call(
-    #     url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None,
-    #     params={'intervall'})
+    call_interval_args = call(
+        url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None,
+        params={'intervall': '11min'})
 
 
 class Shared:

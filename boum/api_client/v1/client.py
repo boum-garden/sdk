@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 
@@ -155,19 +155,23 @@ class DevicesDataEndpoint(Endpoint):
     def __get__(self, instance, owner: type) -> "DevicesDataEndpoint":
         return super().__get__(instance, owner)
 
-    def get(self, start: datetime = None, end: datetime = None):
+    def get(self, start: datetime = None, end: datetime = None, interval: timedelta = None):
         if not self._parent.resource_id:
             raise AttributeError('Cannot get data for a collection of devices')
         if start is not None and not isinstance(start, datetime):
             raise ValueError('start must be a datetime')
         if end is not None and not isinstance(end, datetime):
             raise ValueError('end must be a datetime')
+        if interval is not None and not isinstance(interval, timedelta):
+            raise ValueError('interval must be a timedelta')
 
         query_parameters = {}
         if start:
             query_parameters['timeStart'] = start.strftime(self.DATETIME_FORMAT)
         if end:
             query_parameters['timeEnd'] = end.strftime(self.DATETIME_FORMAT)
+        if interval:
+            query_parameters['interval'] = f'{interval.min}min'
 
         response = self._get(query_parameters=query_parameters)
         return response.json()['data']['timeSeries']

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from boum.api_client.v1.client import ApiClient
 from boum.api_client.v1.models import DeviceStateModel, DeviceModel
@@ -100,7 +100,9 @@ class Device:
         device_model = self._api_client.root.devices(self.device_id).get()
         return device_model.reported_state, device_model.desired_state
 
-    def get_telemetry_data(self, start: datetime = None, end: datetime = None) -> dict[str, list]:
+    def get_telemetry_data(
+            self, start: datetime = None, end: datetime = None,
+            interval: timedelta = None) -> dict[str, list]:
         """
         Get telemetry data for a device
 
@@ -110,13 +112,15 @@ class Device:
                 The start date of the telemetry data
             end
                 The end date of the telemetry data
+            interval
+                the interpolation interavl for the telemetry data
 
         Returns
         -------
             dict[str, list]
-                The telemetry data
+                The telemetry data in a format that can be easily converted to a pandas dataframe.
         """
-        return self._api_client.root.devices(self.device_id).data.get(start, end)
+        return self._api_client.root.devices(self.device_id).data.get(start, end, interval)
 
     def claim(self, user_id: str = None):
         """
