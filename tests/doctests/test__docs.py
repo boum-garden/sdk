@@ -2,7 +2,7 @@ import doctest
 
 import boum.api_client.v1.client
 import boum.resources.device
-from tests.end_to_end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, BASE_URL
+from tests.fixtures.env import EMAIL, PASSWORD, DEVICE_ID, BASE_URL
 
 execution_context = {
     'email': EMAIL,

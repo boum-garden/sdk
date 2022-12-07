@@ -1,7 +1,13 @@
+"""
+This model tests the validation of the model classes on isntantiation, the cnoversion into
+payload objects and the conversion from payload objects into model objects.
+"""
+
 from datetime import time
 
 import pytest
-from boum.api_client.v1.models import DeviceStateModel, DeviceModel
+from boum.api_client.v1.models import DeviceStateModel, DeviceModel, DeviceDataModel
+from tests.fixtures.api import DevicesWithIdDataGet
 
 
 class TestDeviceModel:
@@ -116,3 +122,9 @@ class TestDeviceStateModel:
     def test__pump_state_none__works(self):
         result = DeviceStateModel(pump_state=None)
         assert result.pump_state is None
+
+class TestDeviceDataModel:
+    def test__from_payload__works(self):
+        result = DeviceDataModel.from_payload(DevicesWithIdDataGet.data)
+        expected = DeviceDataModel(DevicesWithIdDataGet.data_clean)
+        assert result == expected

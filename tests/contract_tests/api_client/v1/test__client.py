@@ -5,8 +5,8 @@ import pytest
 from requests import HTTPError
 
 from boum.api_client.v1.client import ApiClient
-from boum.api_client.v1.models import DeviceModel, DeviceStateModel, UserModel
-from tests.end_to_end_tests.fixtures import EMAIL, PASSWORD, DEVICE_ID, USER_ID, BASE_URL
+from boum.api_client.v1.models import DeviceModel, DeviceStateModel, UserModel, DeviceDataModel
+from tests.fixtures.env import EMAIL, PASSWORD, DEVICE_ID, USER_ID, BASE_URL
 
 
 @pytest.fixture(scope='module')
@@ -89,17 +89,15 @@ class TestDevicesEndpoint:
 class TestDevicesDataEndpoint:
 
     def test__get_without_arguments__returns_data(self, client):
-        data = client.root.devices(DEVICE_ID).data.get()
-        for k, v in data.items():
-            assert isinstance(k, str)
-            assert isinstance(v, list)
+        result = client.root.devices(DEVICE_ID).data.get()
+        assert isinstance(result, DeviceDataModel)
 
     def test__get_with_time_restrictions__returns_data(self, client):
-        start, end = datetime.now() - timedelta(days=1), datetime.now()
-        data = client.root.devices(DEVICE_ID).data.get(start=start, end=end)
-        for k, v in data.items():
-            assert isinstance(k, str)
-            assert isinstance(v, list)
+        start = datetime.now() - timedelta(days=1)
+        end = datetime.now()
+        interval = timedelta(minutes=1)
+        result = client.root.devices(DEVICE_ID).data.get(start=start, end=end, interval=interval)
+        assert isinstance(result, DeviceDataModel)
 
 
 class TestDevicesClaimEndpoint:

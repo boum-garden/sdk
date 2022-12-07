@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 
 from boum.api_client import constants
 from boum.api_client.v1.endpoint import Endpoint
-from boum.api_client.v1.models import DeviceModel, UserModel
+from boum.api_client.v1.models import DeviceModel, UserModel, DeviceDataModel
 
 
 class ApiClient:
@@ -149,28 +149,33 @@ class AuthEndpoint(Endpoint):
 
 
 class DevicesDataEndpoint(Endpoint):
-    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
     # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "DevicesDataEndpoint":
         return super().__get__(instance, owner)
 
-    def get(self, start: datetime = None, end: datetime = None):
+    def get(self, start: datetime = None, end: datetime = None, interval: timedelta = None):
         if not self._parent.resource_id:
             raise AttributeError('Cannot get data for a collection of devices')
         if start is not None and not isinstance(start, datetime):
             raise ValueError('start must be a datetime')
         if end is not None and not isinstance(end, datetime):
             raise ValueError('end must be a datetime')
+        if interval is not None and not isinstance(interval, timedelta):
+            raise ValueError('interval must be a timedelta')
 
         query_parameters = {}
         if start:
             query_parameters['timeStart'] = start.strftime(self.DATETIME_FORMAT)
         if end:
             query_parameters['timeEnd'] = end.strftime(self.DATETIME_FORMAT)
+        if interval:
+            interval_minutes = int(interval.total_seconds()/60)
+            query_parameters['interval'] = f'{interval_minutes}m'
 
         response = self._get(query_parameters=query_parameters)
-        return response.json()['data']['timeSeries']
+        return DeviceDataModel.from_payload(response.json()['data'])
 
 
 class DevicesClaimEndpoint(Endpoint):

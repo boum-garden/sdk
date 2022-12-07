@@ -11,12 +11,10 @@ class Model(ABC):
     def to_payload(self) -> dict[str, any]:
         """Convert the model to a dictionary with strings as keys and any type as values."""
 
-
     @staticmethod
     @abstractmethod
     def from_payload(payload: dict[str, any]) -> 'Model':
         """Convert a dictionary with strings as keys values to a model."""
-
 
 
 @dataclass
@@ -133,3 +131,50 @@ class DeviceModel(Model):
         reported = None if desired_dict is None else DeviceStateModel.from_payload(reported_dict)
 
         return DeviceModel(desired, reported)
+
+
+@dataclass
+class DeviceDataModel(Model):
+    data: dict[str, any]
+
+    def __post_init__(self):
+        """Value validation after initialization"""
+        if not isinstance(self.data, dict):
+            raise ValueError('data must be a dict')
+        for k, v in self.data.items():
+            if not isinstance(k, str):
+                raise ValueError('data keys must be strings')
+            if not isinstance(v, list):
+                raise ValueError(
+                    'data values must be lists of strings, numeric values, bools or date/time '
+                    'objects')
+
+    def to_payload(self) -> dict[str, any]:
+        raise NotImplementedError('DeviceDataModel does not support to_payload')
+
+    @staticmethod
+    def from_payload(payload: dict[str, any]) -> 'DeviceDataModel':
+        device_ids = DeviceDataModel._parse_device_ids(payload)
+        timestamps = DeviceDataModel._parse_timestamps(payload)
+        data = DeviceDataModel._parse_values(payload)
+        data['deviceId'] = device_ids
+        data['timestamp'] = timestamps
+        return DeviceDataModel(data)
+
+    @staticmethod
+    def _parse_timestamps(payload: dict) -> list[datetime]:
+        first_timeseries = list(payload['timeSeries'].values())[0]
+        return [v['x'] for v in first_timeseries]
+
+    @staticmethod
+    def _parse_device_ids(payload: dict) -> list[str]:
+        device_id = payload['details']['deviceId']
+        first_timeseries = list(payload['timeSeries'].values())[0]
+        return [device_id] * len(first_timeseries)
+
+    @staticmethod
+    def _parse_values(payload: dict) -> dict[str, list[any]]:
+        values = {}
+        for name, data in payload['timeSeries'].items():
+            values[name] = [v['y'] for v in data]
+        return values
