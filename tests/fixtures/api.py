@@ -122,7 +122,7 @@ class DevicesWithIdDataGet:
     data_clean = expected = {
         'deviceId': [DEVICE_ID, DEVICE_ID],
         'timestamp': ['2022-01-02T03:04:05Z', '2023-06-07T08:09:10Z'],
-        'someColumn': [1, 2]
+        'someValue': [1, 2]
     }
     response = create_mock_response(
         200, data={
@@ -142,7 +142,7 @@ class DevicesWithIdDataGet:
         params={'timeStart': '2022-01-02T03:04:05Z', 'timeEnd': '2023-06-07T08:09:10Z'})
     call_interval_args = call(
         url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None,
-        params={'intervall': '11min'})
+        params={'interval': '11m'})
 
 
 class Shared:

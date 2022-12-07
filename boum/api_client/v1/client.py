@@ -4,7 +4,7 @@ import requests
 
 from boum.api_client import constants
 from boum.api_client.v1.endpoint import Endpoint
-from boum.api_client.v1.models import DeviceModel, UserModel
+from boum.api_client.v1.models import DeviceModel, UserModel, DeviceDataModel
 
 
 class ApiClient:
@@ -149,7 +149,7 @@ class AuthEndpoint(Endpoint):
 
 
 class DevicesDataEndpoint(Endpoint):
-    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
     # pylint: disable=useless-parent-delegation
     def __get__(self, instance, owner: type) -> "DevicesDataEndpoint":
@@ -171,10 +171,11 @@ class DevicesDataEndpoint(Endpoint):
         if end:
             query_parameters['timeEnd'] = end.strftime(self.DATETIME_FORMAT)
         if interval:
-            query_parameters['interval'] = f'{interval.min}min'
+            interval_minutes = int(interval.total_seconds()/60)
+            query_parameters['interval'] = f'{interval_minutes}m'
 
         response = self._get(query_parameters=query_parameters)
-        return response.json()['data']['timeSeries']
+        return DeviceDataModel.from_payload(response.json()['data'])
 
 
 class DevicesClaimEndpoint(Endpoint):

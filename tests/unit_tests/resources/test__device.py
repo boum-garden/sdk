@@ -90,11 +90,9 @@ class TestGetTelemetryData:
             start=DevicesWithIdDataGet.start, end=DevicesWithIdDataGet.end)
         assert result == DevicesWithIdDataGet.data_clean
         assert session_mock.get.call_args == DevicesWithIdDataGet.call_time_limit_args
-        assert result == DevicesWithIdDataGet.data_clean
 
     def test__interval_arguments__returns_data(self, device, session_mock):
         session_mock.get.return_value = DevicesWithIdDataGet.response
         result = device.get_telemetry_data(interval=DevicesWithIdDataGet.interval)
         assert result == DevicesWithIdDataGet.data_clean
         assert session_mock.get.call_args == DevicesWithIdDataGet.call_interval_args
-        assert result == DevicesWithIdDataGet.data_clean
