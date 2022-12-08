@@ -203,8 +203,8 @@ class DevicesDataEndpoint(Endpoint):
         if end:
             query_parameters['timeEnd'] = end.strftime(self.DATETIME_FORMAT)
         if interval:
-            interval_minutes = int(interval.total_seconds() / 60)
-            query_parameters['interval'] = f'{interval_minutes}m'
+            interval_seconds = int(interval.total_seconds())
+            query_parameters['interval'] = f'{interval_seconds}s'
 
         response = self._get(query_parameters=query_parameters)
         return DeviceDataModel.from_payload(response.json()['data'])
