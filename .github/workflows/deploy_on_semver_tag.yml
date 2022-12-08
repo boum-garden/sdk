@@ -55,7 +55,7 @@ jobs:
         id: extract-vars
         run: |
           echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
-          echo "version=${poetry version -s}" >> $GITHUB_OUTPUT
+          echo "version=$(poetry version -s)" >> $GITHUB_OUTPUT
 
       - name: assert tag matches current version
         run: |
