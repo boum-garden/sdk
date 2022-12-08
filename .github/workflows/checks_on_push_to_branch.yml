@@ -15,13 +15,13 @@ permissions:
     pull-requests: write
     id-token: write
     deployments: read
-    issues: write
-    discussions: write
+    issues: read
+    discussions: read
     packages: read
     pages: read
     repository-projects: read
     security-events: read
-    statuses: write
+    statuses: read
 
 jobs:
 
