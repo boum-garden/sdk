@@ -66,7 +66,7 @@ jobs:
 
       - name: Pytest
         if: success() || failure()
-        run: poetry run pytest --junitxml=${{ github.workspace }}/pytest_report.xml || [ $? = 1 ]
+        run: poetry run pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt|| [ $? = 1 ]
         env:
           BOUM_SDK_TEST_EMAIL: boum.sdk.test.user@boum.garden
           BOUM_SDK_TEST_PASSWORD: ${{ secrets.BOUM_SDK_TEST_PASSWORD}}
@@ -74,11 +74,17 @@ jobs:
           BOUM_SDK_TEST_BASE_URL: https://api-dev.boum.us
           BOUM_SDK_TEST_USER_ID: 7XDADsQ9FYS0EusHZiZIBMeUerQ2
 
-      - name: Publish pytest report
+      - name: Comment pytest report
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
-          files: ${{ github.workspace }}/pytest_report.xml
+          files: pytest.xml
           check_name: Pytest Results
+
+      - name: Comment pytest coverage report
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: ./pytest-coverage.txt
+          junitxml-path: ./pytest.xml
 
 
 

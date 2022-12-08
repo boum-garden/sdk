@@ -22,6 +22,7 @@ bumpver = "^2022.1119"
 pytest-rerunfailures = "^10.3"
 pandas = "^1.5.2"
 bandit = "^1.7.4"
+coverage = "^6.5.0"
 
 
 [tool.bumpver]
