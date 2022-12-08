@@ -14,14 +14,14 @@ permissions:
     checks: write
     pull-requests: write
     id-token: write
-    deployments: read
-    issues: read
-    discussions: read
-    packages: read
-    pages: read
-    repository-projects: read
-    security-events: read
-    statuses: read
+    deployments: write
+    issues: write
+    discussions: write
+    packages: write
+    pages: write
+    repository-projects: write
+    security-events: write
+    statuses: write
 
 jobs:
 
