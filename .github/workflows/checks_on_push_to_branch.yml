@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-    actions: read
+    actions: write
     checks: write
     contents: write
     deployments: write
