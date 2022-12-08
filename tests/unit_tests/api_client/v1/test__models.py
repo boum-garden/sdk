@@ -5,6 +5,8 @@ payload objects and the conversion from payload objects into model objects.
 
 from datetime import time, datetime
 
+import pandas as pd
+import pandas.api.types as ptypes
 import pytest
 
 from boum.api_client.v1.models import DeviceStateModel, DeviceModel, DeviceDataModel
@@ -138,3 +140,13 @@ class TestDeviceDataModel:
         for k in result.data:
             if k not in ['timestamp', 'deviceId']:
                 assert all((isinstance(v, float) for v in result.data[k]))
+
+    def test__data_can_be_converted_to_pandas_df(self):
+        result = DeviceDataModel.from_payload(DevicesWithIdDataGet.data)
+        df = pd.DataFrame(result.data)
+
+        assert ptypes.is_string_dtype(df['deviceId'])
+        assert ptypes.is_datetime64_any_dtype(df['timestamp'])
+        for k in result.data:
+            if k not in ['timestamp', 'deviceId']:
+                ptypes.is_numeric_dtype(df[k])
