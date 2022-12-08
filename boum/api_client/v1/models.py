@@ -177,7 +177,15 @@ class DeviceDataModel(Model):
 
     @staticmethod
     def _parse_values(payload: dict) -> dict[str, list[any]]:
+        def tryparse_float(value: str) -> float | None:
+            try:
+                return float(value)
+            except TypeError:
+                return None
+            except ValueError:
+                return None
+
         values = {}
         for name, data in payload['timeSeries'].items():
-            values[name] = [float(v['y']) for v in data]
+            values[name] = [tryparse_float(v['y']) for v in data]
         return values

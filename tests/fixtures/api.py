@@ -125,7 +125,7 @@ class DevicesWithIdDataGet:
         'deviceId': [DEVICE_ID, DEVICE_ID],
         'timestamp': [datetime(2022, 1, 2, 3, 4, 5, tzinfo=tzutc()),
                       datetime(2023, 6, 7, 8, 9, 10, 123000, tzinfo=tzutc())],
-        'someValue': [1.1, 2.2]
+        'someValue': [1.1, None]
     }
     data = {
         'details': {
@@ -134,7 +134,7 @@ class DevicesWithIdDataGet:
         'timeSeries': {
             'someValue': [
                 {'x': '2022-01-02T03:04:05Z', 'y': 1.1},
-                {'x': '2023-06-07T08:09:10.123Z', 'y': 2.2}
+                {'x': '2023-06-07T08:09:10.123Z', 'y': None}
             ]
         }
     }

@@ -139,7 +139,7 @@ class TestDeviceDataModel:
         assert all((isinstance(d, str) for d in result.data['deviceId']))
         for k in result.data:
             if k not in ['timestamp', 'deviceId']:
-                assert all((isinstance(v, float) for v in result.data[k]))
+                assert all((isinstance(v, float | None) for v in result.data[k]))
 
     def test__data_can_be_converted_to_pandas_df(self):
         result = DeviceDataModel.from_payload(DevicesWithIdDataGet.data)
