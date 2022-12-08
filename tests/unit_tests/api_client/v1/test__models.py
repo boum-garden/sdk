@@ -3,9 +3,10 @@ This model tests the validation of the model classes on isntantiation, the cnove
 payload objects and the conversion from payload objects into model objects.
 """
 
-from datetime import time
+from datetime import time, datetime
 
 import pytest
+
 from boum.api_client.v1.models import DeviceStateModel, DeviceModel, DeviceDataModel
 from tests.fixtures.api import DevicesWithIdDataGet
 
@@ -108,6 +109,7 @@ class TestDeviceStateModel:
     @pytest.mark.parametrize('value', [-1, 1, '10', '10:33'])
     def test__refill_time_invalid__raises_value_error(self, value):
         with pytest.raises(ValueError):
+            # noinspection PyTypeChecker
             DeviceStateModel(refill_time=value)
 
     def test__refill_time_none__works(self):
@@ -117,14 +119,22 @@ class TestDeviceStateModel:
     @pytest.mark.parametrize('value', [-1, 1, '10', time(0, 0)])
     def test__pump_state_invalid__raises_value_error(self, value):
         with pytest.raises(ValueError):
+            # noinspection PyTypeChecker
             DeviceStateModel(pump_state=value)
 
     def test__pump_state_none__works(self):
         result = DeviceStateModel(pump_state=None)
         assert result.pump_state is None
 
+
 class TestDeviceDataModel:
     def test__from_payload__works(self):
         result = DeviceDataModel.from_payload(DevicesWithIdDataGet.data)
         expected = DeviceDataModel(DevicesWithIdDataGet.data_clean)
         assert result == expected
+
+        assert all((isinstance(t, datetime) for t in result.data['timestamp']))
+        assert all((isinstance(d, str) for d in result.data['deviceId']))
+        for k in result.data:
+            if k not in ['timestamp', 'deviceId']:
+                assert all((isinstance(v, float) for v in result.data[k]))

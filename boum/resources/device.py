@@ -120,8 +120,8 @@ class Device:
             dict[str, list]
                 The telemetry data in a format that can be easily converted to a pandas dataframe.
         """
-        device_data_model = self._api_client.root.devices(self.device_id).data.get(start, end,
-                                                                                interval)
+        device_data_model = self._api_client.root.devices(self.device_id).data.get(
+            start, end, interval)
         return device_data_model.data
 
     def claim(self, user_id: str = None):

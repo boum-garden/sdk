@@ -136,6 +136,7 @@ class DeviceModel(Model):
 @dataclass
 class DeviceDataModel(Model):
     data: dict[str, any]
+    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
     def __post_init__(self):
         """Value validation after initialization"""
@@ -164,7 +165,8 @@ class DeviceDataModel(Model):
     @staticmethod
     def _parse_timestamps(payload: dict) -> list[datetime]:
         first_timeseries = list(payload['timeSeries'].values())[0]
-        return [v['x'] for v in first_timeseries]
+        timestamps = [v['x'] for v in first_timeseries]
+        return [datetime.strptime(t, DeviceDataModel.DATETIME_FORMAT) for t in timestamps]
 
     @staticmethod
     def _parse_device_ids(payload: dict) -> list[str]:
@@ -176,5 +178,5 @@ class DeviceDataModel(Model):
     def _parse_values(payload: dict) -> dict[str, list[any]]:
         values = {}
         for name, data in payload['timeSeries'].items():
-            values[name] = [v['y'] for v in data]
+            values[name] = [float(v['y']) for v in data]
         return values

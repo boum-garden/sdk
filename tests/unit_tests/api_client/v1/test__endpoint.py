@@ -60,6 +60,7 @@ def test__create_without_resource_where_disabled__raises_attribute_error():
     root = EndpointRoot('base')
     with pytest.raises(AttributeError):
         # pylint: disable=pointless-statement
+        # noinspection PyStatementEffect
         root.endpoint_b.endpoint_d.url
 
 
@@ -73,6 +74,7 @@ def test__create_with_resource_ids__urls_are_correct():
 
 def test__request_attempt_with_not_connected_endpoint__raises_runtime_error():
     root = EndpointRoot('base')
+    # noinspection PyTypeChecker
     root.set_session(None)
     with pytest.raises(RuntimeError):
         root.endpoint_b('1').get()

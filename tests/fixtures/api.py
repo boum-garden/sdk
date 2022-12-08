@@ -3,8 +3,8 @@ This module provides
 - mock responses for the session object of the ApiClient and Endpoint classes.
 - call objects with the correct attributes for the request methods of the session objects.
 
-IMPORTANT: If these objects don't match the the expected requests and responses that the API
-can process, the unit test will not test the code in the correct way. Therefore this module has
+IMPORTANT: If these objects don't match the expected requests and responses that the API
+can process, the unit test will not test the code in the correct way. Therefore, this module has
 kept up-to-date with the API
 """
 from datetime import time, datetime, timedelta
@@ -121,8 +121,8 @@ class DevicesWithIdDataGet:
     interval = timedelta(minutes=11)
     data_clean = expected = {
         'deviceId': [DEVICE_ID, DEVICE_ID],
-        'timestamp': ['2022-01-02T03:04:05Z', '2023-06-07T08:09:10Z'],
-        'someValue': [1, 2]
+        'timestamp': [datetime(2022, 1, 2, 3, 4, 5), datetime(2023, 6, 7, 8, 9, 10)],
+        'someValue': [1.1, 2.2]
     }
     data = {
         'details': {
@@ -130,8 +130,8 @@ class DevicesWithIdDataGet:
         },
         'timeSeries': {
             'someValue': [
-                {'x': '2022-01-02T03:04:05Z', 'y': 1},
-                {'x': '2023-06-07T08:09:10Z', 'y': 2}
+                {'x': '2022-01-02T03:04:05Z', 'y': 1.1},
+                {'x': '2023-06-07T08:09:10Z', 'y': 2.2}
             ]
         }
     }
