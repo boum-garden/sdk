@@ -9,16 +9,16 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
+    contents: read
     actions: read
     checks: write
-    contents: write
-    deployments: write
+    pull-requests: write
+    deployments: read
     id-token: write
     issues: write
     discussions: write
     packages: write
     pages: write
-    pull-requests: write
     repository-projects: write
     security-events: write
     statuses: write
