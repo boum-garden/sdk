@@ -48,9 +48,6 @@ jobs:
       - name: poetry install project
         run: poetry install --no-interaction
 
-      - name: poetry build
-        run: poetry build
-
       - name: extract vars
         id: extract-vars
         run: |
