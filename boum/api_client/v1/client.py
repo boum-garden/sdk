@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, timedelta
 
 import requests
@@ -58,14 +59,18 @@ class ApiClient:
             base_url
                 The URL of the API. Defaults to the production API.
         """
-
-        if not (email and password) and not refresh_token:
-            raise ValueError('Either email and password or refresh_token must be set')
-        self._email = email
-        self._password = password
-        self._refresh_token = refresh_token
-
+        self._email = None
         self.__access_token: str | None = None
+        self.__refresh_token: bytes | None = None
+        self.__password: bytes | None = None
+
+        if email and password:
+            self._email = email
+            self._password = password
+        elif refresh_token:
+            self._refresh_token = refresh_token
+        else:
+            raise ValueError('Either email and password or refresh_token must be set')
 
         self._session = session
         self.root = RootEndpoint(
@@ -79,6 +84,26 @@ class ApiClient:
     def _access_token(self, value: str | None):
         self.__access_token = value
         self._session.headers.update({'Authorization': f'{self.__access_token}'})
+
+    @property
+    def _refresh_token(self) -> str | None:
+        if self.__refresh_token:
+            return base64.b64decode(self.__refresh_token).decode("utf-8")
+        return None
+
+    @_refresh_token.setter
+    def _refresh_token(self, value: str | None):
+        self.__refresh_token = base64.b64encode(value.encode('utf-8')) if value else None
+
+    @property
+    def _password(self) -> str | None:
+        if self.__password:
+            return base64.b64decode(self.__password).decode("utf-8")
+        return None
+
+    @_password.setter
+    def _password(self, value: str | None):
+        self.__password = base64.b64encode(value.encode('utf-8')) if value else None
 
     def __enter__(self) -> "ApiClient":
         """Connect to the API and sign in or refresh the access token."""
