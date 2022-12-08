@@ -21,7 +21,8 @@ class Endpoint(ABC):
 
     Only the arguments 'path_segment' and optionally 'disabled_for_collection' need to be set when
     defining child endpoint class attributes. The other arguments will be set automatically when the
-    endpoint hierarchy tree is constructed.
+    endpoint hierarchy tree is constructed. The root endpoint additionally needs to have the
+    'session' and 'refresh_access_token' arguments set.
     """
 
     _access_token_expired_message = 'AccessTokenExpired'  # nosec

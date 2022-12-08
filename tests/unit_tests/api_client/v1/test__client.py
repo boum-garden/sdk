@@ -8,8 +8,9 @@ from unittest.mock import Mock
 import pytest
 
 from boum.api_client.v1.client import ApiClient
+from boum.api_client.v1.models import DeviceModel
 from tests.fixtures.api import AuthSigningPost, AuthTokenPost, DevicesGet, Shared, EMAIL, \
-    PASSWORD, BASE_URL, REFRESH_TOKEN
+    PASSWORD, BASE_URL, REFRESH_TOKEN, DEVICE_ID, USER_ID
 
 
 @pytest.fixture
@@ -50,3 +51,21 @@ class TestAuthLogic:
             client.root.devices.get()
             assert session_mock.get.call_count == 2
             assert session_mock.post.call_args_list == [AuthSigningPost.call, AuthTokenPost.call]
+
+
+class TestDevicesEndpoint:
+
+    def test__post_with_device_id__raises_value_error(self, client):
+        with pytest.raises(ValueError):
+            client.root.devices(DEVICE_ID).post()
+
+    def test__patch_without_device_id__raises_value_error(self, client):
+        with pytest.raises(ValueError):
+            client.root.devices.patch(DeviceModel())
+
+
+class TestDevicesClaimEndpoint:
+
+    def test__delete_with_different_user_id__raises_error(self, client):
+        with pytest.raises(AttributeError):
+            client.root.devices(DEVICE_ID).claim(USER_ID).delete()

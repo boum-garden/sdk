@@ -78,14 +78,6 @@ class TestDevicesEndpoint:
             client.root.devices.post()
             assert e.value.response.status_code == 401
 
-    def test__post_with_device_id__raises_value_error(self, client):
-        with pytest.raises(ValueError):
-            client.root.devices(DEVICE_ID).post()
-
-    def test__patch_without_device_id__raises_value_error(self, client, device_model):
-        with pytest.raises(ValueError):
-            client.root.devices.patch(device_model)
-
 
 class TestDevicesDataEndpoint:
 
@@ -119,10 +111,6 @@ class TestDevicesClaimEndpoint:
                 raise e
         client.root.devices(DEVICE_ID).claim.delete()
         client.root.devices(DEVICE_ID).claim.put()
-
-    def test__delete_with_different_user_id__raises_error(self, client):
-        with pytest.raises(AttributeError):
-            client.root.devices(DEVICE_ID).claim('some_user_id').delete()
 
 
 class TestUsersEndpoint:
