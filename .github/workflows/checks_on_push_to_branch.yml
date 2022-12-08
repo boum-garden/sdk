@@ -9,20 +9,19 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
-  checks: write
-  pull-requests: write
-
-  actions: write
-  deployments: write
-  id-token: write
-  issues: write
-  discussions: write
-  packages: write
-  pages: write
-  repository-projects: write
-  security-events: write
-  statuses: write
+    actions: write
+    checks: write
+    contents: write
+    deployments: write
+    id-token: write
+    issues: write
+    discussions: write
+    packages: write
+    pages: write
+    pull-requests: write
+    repository-projects: write
+    security-events: write
+    statuses: write
 
 jobs:
 
