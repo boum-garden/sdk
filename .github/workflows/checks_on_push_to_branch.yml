@@ -10,10 +10,10 @@ concurrency:
 
 permissions:
   contents: read
-  issues: read
+  discussions: write
+  statuses: write
   checks: write
   pull-requests: write
-  comments: write
 
 jobs:
 
