@@ -1,9 +1,8 @@
-
 name: Deployment on push to main
 
 on:
   push:
-    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
 
 jobs:
 
@@ -48,6 +47,22 @@ jobs:
 
       - name: poetry install project
         run: poetry install --no-interaction
+
+      - name: poetry build
+        run: poetry build
+
+      - name: extract vars
+        id: extract-vars
+        run: |
+          echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+          echo "version=$(poetry version -s)" >> $GITHUB_OUTPUT
+
+      - name: assert tag matches current version
+        run: |
+          if [ ${{ steps.extract-vars.outputs.tag }} != ${{ steps.extract-vars.outputs.version }} ]; then
+            echo "Tag ${{ steps.extract-vars.outputs.tag }} does not match version ${{ steps.extract-vars.outputs.version }}"
+            exit 1
+          fi
 
       - name: Deploy to pypi
         run: poetry publish --build --username __token__ --password ${{ secrets.PYPI_TOKEN }}
