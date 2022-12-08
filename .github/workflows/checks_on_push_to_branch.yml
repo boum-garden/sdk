@@ -8,11 +8,12 @@ concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 
-permissions: write-all
-#  contents: read
-#  issues: read
-#  checks: write
-#  pull-requests: write
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+  comments: write
 
 jobs:
 
@@ -73,10 +74,6 @@ jobs:
           BOUM_SDK_TEST_DEVICE_ID: 9a8a5e6d-12d5-4997-b9da-0bb446eacb2f
           BOUM_SDK_TEST_BASE_URL: https://api-dev.boum.us
           BOUM_SDK_TEST_USER_ID: 7XDADsQ9FYS0EusHZiZIBMeUerQ2
-
-
-      - name: Comment coverage
-        uses: coroo/pytest-coverage-commentator@v1.0.2
 
       - name: Comment pytest report
         if: success() || failure()
