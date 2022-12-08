@@ -9,11 +9,11 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-    actions: write
+    actions: read
     checks: write
     contents: write
     deployments: write
-    id-token: read
+    id-token: write
     issues: write
     discussions: write
     packages: write
