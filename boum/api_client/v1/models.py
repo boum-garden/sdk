@@ -136,7 +136,7 @@ class DeviceModel(Model):
 @dataclass
 class DeviceDataModel(Model):
     data: dict[str, any]
-    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
     def __post_init__(self):
         """Value validation after initialization"""

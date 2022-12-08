@@ -121,8 +121,8 @@ class DevicesWithIdDataGet:
     interval = timedelta(minutes=11)
     data_clean = expected = {
         'deviceId': [DEVICE_ID, DEVICE_ID],
-        'timestamp': [datetime(2022, 1, 2, 3, 4, 5, 123000),
-                      datetime(2023, 6, 7, 8, 9, 10, 456000)],
+        'timestamp': [datetime(2022, 1, 2, 3, 4, 5),
+                      datetime(2023, 6, 7, 8, 9, 10)],
         'someValue': [1.1, 2.2]
     }
     data = {
@@ -131,8 +131,8 @@ class DevicesWithIdDataGet:
         },
         'timeSeries': {
             'someValue': [
-                {'x': '2022-01-02T03:04:05.123Z', 'y': 1.1},
-                {'x': '2023-06-07T08:09:10.456Z', 'y': 2.2}
+                {'x': '2022-01-02T03:04:05Z', 'y': 1.1},
+                {'x': '2023-06-07T08:09:10Z', 'y': 2.2}
             ]
         }
     }
@@ -143,7 +143,7 @@ class DevicesWithIdDataGet:
         params={'timeStart': '2022-01-02T03:04:05Z', 'timeEnd': '2023-06-07T08:09:10Z'})
     call_interval_args = call(
         url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None,
-        params={'interval': '11m'})
+        params={'interval': '660s'})
 
 
 class Shared:
