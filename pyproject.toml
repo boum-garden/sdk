@@ -9,6 +9,7 @@ description = "SDK to interact with the boum API"
 authors = ["Marc Pfander <marc.pfander@boum.garden>"]
 readme = "README.md"
 license = "MIT"
+repository = "https://github.com/boum-garden/sdk"
 
 [tool.poetry.dependencies]
 python = "^3.10"
