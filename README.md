@@ -83,7 +83,7 @@ The resource abstractions provide a more intuitive interface to interact with th
 ```
 
 ### Jupyter Notebook Demo
-A Jupyter notebook demo is available [here](doc/boum-sdk-demo.ipynb).
+A Jupyter notebook demo is available [here](https://github.com/boum-garden/sdk/blob/638d62836f5b8b2f169d186170c679d6a813867a/doc/boum-sdk-demo.ipynb).
 
 ### Loging
 The SDK uses the standard python logging module.
