@@ -6,11 +6,11 @@ on:
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
     actions: read
-    checks: write
+    checks: read
     contents: write
     deployments: write
     id-token: write
