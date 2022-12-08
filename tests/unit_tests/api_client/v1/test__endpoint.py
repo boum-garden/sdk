@@ -29,10 +29,10 @@ class EndpointBD(Endpoint):
 
 
 class EndpointB(Endpoint):
-    endpoint_d = EndpointBD('d', disable_for_collection=True)
+    endpoint_d = EndpointBD('d', disabled_for_collection=True)
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "UsersEndpoint":
+    def __get__(self, instance, owner: type) -> "EndpointB":
         return super().__get__(instance, owner)
 
     def get(self):

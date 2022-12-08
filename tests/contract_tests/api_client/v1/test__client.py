@@ -54,6 +54,7 @@ class TestDevicesEndpoint:
         result = client.root.devices.get()
         assert result == [DEVICE_ID]
 
+    @pytest.mark.flaky(reruns=3)
     @pytest.mark.parametrize('pump_state', [True, False])
     def test__patch_and_get_with_device_id__sets_and_returns_new_desired_state(
             self, client, pump_state: bool):

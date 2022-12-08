@@ -23,9 +23,6 @@ class Endpoint(ABC):
     ----------
         url : str
             The full url of the endpoint.
-        resource_id : str | None
-            The id of the resource that this endpoint represents. If it is none, the enpoint
-            represents a collection of resources.
     """
 
     _session: requests.Session | None = None
@@ -35,7 +32,7 @@ class Endpoint(ABC):
 
     def __init__(
             self, path_segment: str, resource_id: str | None = None,
-            disable_for_collection: bool = False,
+            disabled_for_collection: bool = False,
             refresh_access_token: Callable[[], None] = None,
             parent: 'Endpoint | None' = None):
         """
@@ -50,14 +47,13 @@ class Endpoint(ABC):
                 The parent endpoint. If it is none, the endpoint is the root of the tree.
             refresh_access_token
                 A callable that refreshes the access token.
-            disable_for_collection
-                If true, the endpoint will be accessible even if the parent doesn't specify a
-                resource id.
+            disabled_for_collection
+                If true, the endpoint will not be accessible if no resource id is provided.
         """
         self._path_segment = path_segment
         Endpoint._refresh_access_token = refresh_access_token
-        self.resource_id = resource_id
-        self._disable_for_collection = disable_for_collection
+        self._resource_id = resource_id
+        self._disabled_for_collection = disabled_for_collection
         self._parent = parent
 
     @abstractmethod
@@ -70,13 +66,13 @@ class Endpoint(ABC):
                 return super().__get__(instance, owner)
         """
         if isinstance(instance, Endpoint):
-            if self._disable_for_collection and not instance.resource_id:
+            if self._disabled_for_collection and instance.is_collection:
                 raise AttributeError(
                     'This endpoint is only available for a single resource, not for a collection')
             return type(self)(
                 path_segment=self._path_segment,
                 resource_id=None,
-                disable_for_collection=self._disable_for_collection,
+                disabled_for_collection=self._disabled_for_collection,
                 refresh_access_token=self._refresh_access_token,
                 parent=instance)
 
@@ -90,7 +86,7 @@ class Endpoint(ABC):
         return type(self)(
             path_segment=self._path_segment,
             resource_id=resource_id,
-            disable_for_collection=self._disable_for_collection,
+            disabled_for_collection=self._disabled_for_collection,
             refresh_access_token=self._refresh_access_token,
             parent=self._parent)
 
@@ -99,8 +95,18 @@ class Endpoint(ABC):
         """The full url of the endpoint."""
         path_elemets = [self._parent.url if self._parent else None,
                         self._path_segment,
-                        self.resource_id]
+                        self._resource_id]
         return '/'.join(s.strip('/') for s in path_elemets if s)
+
+    @property
+    def is_collection(self) -> bool:
+        """True if the endpoint represents a collection of resources."""
+        return self._resource_id is None
+
+    @property
+    def is_resource(self) -> bool:
+        """True if the endpoint represents a single resource."""
+        return not self.is_collection
 
     @classmethod
     def set_session(cls, session: requests.Session):

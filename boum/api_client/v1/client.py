@@ -156,7 +156,7 @@ class DevicesDataEndpoint(Endpoint):
         return super().__get__(instance, owner)
 
     def get(self, start: datetime = None, end: datetime = None, interval: timedelta = None):
-        if not self._parent.resource_id:
+        if self._parent.is_collection:
             raise AttributeError('Cannot get data for a collection of devices')
         if start is not None and not isinstance(start, datetime):
             raise ValueError('start must be a datetime')
@@ -188,7 +188,7 @@ class DevicesClaimEndpoint(Endpoint):
         self._put()
 
     def delete(self):
-        if self.resource_id:
+        if self.is_resource:
             raise AttributeError('Cannot unclaim from a specific user')
         self._delete()
 
@@ -202,7 +202,7 @@ class DevicesEndpoint(Endpoint):
         return super().__get__(instance, owner)
 
     def post(self) -> str:
-        if self.resource_id:
+        if self.is_resource:
             raise ValueError('Cannot post to a specific device')
         response = self._post()
         data = response.json()['data']
@@ -211,14 +211,14 @@ class DevicesEndpoint(Endpoint):
     def get(self) -> list[str] | DeviceModel:
         response = self._get()
         data = response.json()['data']
-        if not self.resource_id:
+        if self.is_collection:
             return [d['id'] for d in data]
 
         device_model = DeviceModel.from_payload(data)
         return device_model
 
     def patch(self, device_model: DeviceModel):
-        if not self.resource_id:
+        if self.is_collection:
             raise ValueError('Cannot patch a collection of devices')
         if not isinstance(device_model, DeviceModel):
             raise ValueError('device_model must be a DeviceModel')
@@ -227,7 +227,7 @@ class DevicesEndpoint(Endpoint):
         self._patch(payload)
 
     def delete(self):
-        if not self.resource_id:
+        if self.is_collection:
             raise ValueError('Cannot delete a collection of devices')
         raise NotImplementedError()
 
