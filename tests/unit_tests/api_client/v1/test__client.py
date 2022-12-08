@@ -24,7 +24,7 @@ def client(session_mock):
     return ApiClient(EMAIL, PASSWORD, base_url=BASE_URL, session=session_mock)
 
 
-class TestAuthLogic:
+class TestClientAuthLogic:
     def test__instantiated_with_email_and_password__signin_happens(self, client, session_mock):
         with client:
             assert session_mock.post.call_args == AuthSigningPost.call
@@ -51,6 +51,28 @@ class TestAuthLogic:
             client.root.devices.get()
             assert session_mock.get.call_count == 2
             assert session_mock.post.call_args_list == [AuthSigningPost.call, AuthTokenPost.call]
+
+class TestClientConnectLogic:
+
+    def test__request_without_with_statement_or_connect__raises_runtime_error(self, client):
+        with pytest.raises(RuntimeError):
+            client.root.devices.get()
+
+    def test__request_after_with_statement__raises_runtime_error(self, client):
+        with client:
+            pass
+
+        with pytest.raises(RuntimeError):
+            client.root.devices.get()
+
+    def test__connect_and_disconect__works(self, client, session_mock):
+        session_mock.get.return_value = DevicesGet.response
+        client.connect()
+        client.root.devices.get()
+        client.disconnect()
+        with pytest.raises(RuntimeError):
+            client.root.devices.get()
+
 
 
 class TestDevicesEndpoint:

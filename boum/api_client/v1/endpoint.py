@@ -71,7 +71,7 @@ class Endpoint(ABC):
             return type(self)(
                 path_segment=self._path_segment,
                 disabled_for_collection=self._disabled_for_collection,
-                session=parent._session,
+                session=parent.session,
                 resource_id=self._resource_id,
                 refresh_access_token=parent._refresh_access_token,
                 parent=parent)
@@ -90,6 +90,15 @@ class Endpoint(ABC):
             disabled_for_collection=self._disabled_for_collection,
             refresh_access_token=self._refresh_access_token,
             parent=self._parent)
+
+    @property
+    def session(self) -> requests.Session:
+        """The session used for the requests."""
+        return self._session
+
+    @session.setter
+    def session(self, value: requests.Session):
+        self._session = value
 
     @property
     def url(self) -> str:
@@ -124,8 +133,8 @@ class Endpoint(ABC):
 
             def execute_and_parse():
 
-                if not self._session:
-                    raise RuntimeError('Endpoints are not connected to the API')
+                if not self.session:
+                    raise RuntimeError('Endpoint is not connected to the API')
 
                 response = func(self, *args, **kwargs)
                 try:
