@@ -149,4 +149,4 @@ class DevicesWithIdDataGet:
 
 
 class Shared:
-    response_access_token_expired = create_mock_response(401, message='AccessTokenExpired')
+    response_access_token_expired = create_mock_response(401, message='ExpiredAccessToken')

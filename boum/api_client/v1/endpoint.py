@@ -25,7 +25,7 @@ class Endpoint(ABC):
     'session' and 'refresh_access_token' arguments set.
     """
 
-    _access_token_expired_message = 'AccessTokenExpired'  # nosec
+    _access_token_expired_message = 'ExpiredAccessToken'  # nosec
 
     def __init__(
             self, path_segment: str, disabled_for_collection: bool = False,
