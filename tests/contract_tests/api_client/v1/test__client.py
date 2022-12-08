@@ -81,10 +81,12 @@ class TestDevicesEndpoint:
 
 class TestDevicesDataEndpoint:
 
+    @pytest.mark.flaky(reruns=3)
     def test__get_without_arguments__returns_data(self, client):
         result = client.root.devices(DEVICE_ID).data.get()
         assert isinstance(result, DeviceDataModel)
 
+    @pytest.mark.flaky(reruns=3)
     def test__get_with_time_restrictions__returns_data(self, client):
         start = datetime.now() - timedelta(days=1)
         end = datetime.now()
@@ -95,6 +97,7 @@ class TestDevicesDataEndpoint:
 
 class TestDevicesClaimEndpoint:
 
+    @pytest.mark.flaky(reruns=3)
     def test__put_with_user_id__works(self, client):
         try:
             client.root.devices(DEVICE_ID).claim.delete()
@@ -103,6 +106,7 @@ class TestDevicesClaimEndpoint:
                 raise e
         client.root.devices(DEVICE_ID).claim.put()
 
+    @pytest.mark.flaky(reruns=3)
     def test__delete_and_put_without_user_id__works(self, client):
         try:
             client.root.devices(DEVICE_ID).claim.put()

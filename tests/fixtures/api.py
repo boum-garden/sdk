@@ -10,6 +10,8 @@ kept up-to-date with the API
 from datetime import time, datetime, timedelta
 from unittest.mock import Mock, call
 
+from dateutil.tz import tzutc
+
 from boum.api_client.v1.models import DeviceStateModel
 
 DEVICE_ID = 'device_id'
@@ -121,8 +123,9 @@ class DevicesWithIdDataGet:
     interval = timedelta(minutes=11)
     data_clean = expected = {
         'deviceId': [DEVICE_ID, DEVICE_ID],
-        'timestamp': [datetime(2022, 1, 2, 3, 4, 5), datetime(2023, 6, 7, 8, 9, 10)],
-        'someValue': [1.1, 2.2]
+        'timestamp': [datetime(2022, 1, 2, 3, 4, 5, tzinfo=tzutc()),
+                      datetime(2023, 6, 7, 8, 9, 10, 123000, tzinfo=tzutc())],
+        'someValue': [1.1, None]
     }
     data = {
         'details': {
@@ -131,7 +134,7 @@ class DevicesWithIdDataGet:
         'timeSeries': {
             'someValue': [
                 {'x': '2022-01-02T03:04:05Z', 'y': 1.1},
-                {'x': '2023-06-07T08:09:10Z', 'y': 2.2}
+                {'x': '2023-06-07T08:09:10.123Z', 'y': None}
             ]
         }
     }
@@ -142,7 +145,7 @@ class DevicesWithIdDataGet:
         params={'timeStart': '2022-01-02T03:04:05Z', 'timeEnd': '2023-06-07T08:09:10Z'})
     call_interval_args = call(
         url=f'{BASE_URL}/v1/devices/{DEVICE_ID}/data', json=None,
-        params={'interval': '11m'})
+        params={'interval': '660s'})
 
 
 class Shared:

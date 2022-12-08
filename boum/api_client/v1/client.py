@@ -73,8 +73,7 @@ class ApiClient:
             raise ValueError('Either email and password or refresh_token must be set')
 
         self._session = session
-        self.root = RootEndpoint(
-            base_url + '/v1', session=session, refresh_access_token=self._refresh_access_token)
+        self.root = RootEndpoint(base_url + '/v1', refresh_access_token=self._refresh_access_token)
 
     @property
     def _access_token(self) -> str | None:
@@ -107,17 +106,25 @@ class ApiClient:
 
     def __enter__(self) -> "ApiClient":
         """Connect to the API and sign in or refresh the access token."""
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Disconnect from the API."""
+        self.disconnect()
+
+    def disconnect(self):
+        self._session.close()
+        self.root.session = None
+
+    def connect(self):
+        self.root.session = self._session
         if self._access_token:
             pass
         elif self._refresh_token:
             self._refresh_access_token()
         else:
             self._signin()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Disconnect from the API."""
-        self._session.close()
 
     def _signin(self):
         self._access_token, self._refresh_token = self.root.auth.signin.post(
@@ -196,8 +203,8 @@ class DevicesDataEndpoint(Endpoint):
         if end:
             query_parameters['timeEnd'] = end.strftime(self.DATETIME_FORMAT)
         if interval:
-            interval_minutes = int(interval.total_seconds() / 60)
-            query_parameters['interval'] = f'{interval_minutes}m'
+            interval_seconds = int(interval.total_seconds())
+            query_parameters['interval'] = f'{interval_seconds}s'
 
         response = self._get(query_parameters=query_parameters)
         return DeviceDataModel.from_payload(response.json()['data'])

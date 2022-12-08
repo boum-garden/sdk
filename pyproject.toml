@@ -4,11 +4,12 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "boum"
-version = "0.8.1"
+version = "1.0.0"
 description = "SDK to interact with the boum API"
 authors = ["Marc Pfander <marc.pfander@boum.garden>"]
 readme = "README.md"
 license = "MIT"
+repository = "https://github.com/boum-garden/sdk"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -21,10 +22,13 @@ bumpver = "^2022.1119"
 pytest-rerunfailures = "^10.3"
 pandas = "^1.5.2"
 bandit = "^1.7.4"
+coverage = "^6.5.0"
+pytest-cov = "^4.0.0"
+pytest-xdist = "^3.1.0"
 
 
 [tool.bumpver]
-current_version = "0.8.1"
+current_version = "1.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
