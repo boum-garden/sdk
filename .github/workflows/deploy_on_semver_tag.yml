@@ -1,4 +1,4 @@
-name: Deployment on push to main
+name: Deployment on semver tag
 
 on:
   push:
@@ -47,9 +47,6 @@ jobs:
 
       - name: poetry install project
         run: poetry install --no-interaction
-
-      - name: poetry build
-        run: poetry build
 
       - name: extract vars
         id: extract-vars
