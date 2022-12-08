@@ -18,40 +18,38 @@ class Endpoint(ABC):
 
     if there are nested endpoints, the subclasses should also have attributes that represent the
     nested paths. These should also be subclasses of EndpointClient.
+
+    Only the arguments 'path_segment' and optionally 'disabled_for_collection' need to be set when
+    defining child endpoint class attributes. The other arguments will be set automatically when the
+    endpoint hierarchy tree is constructed.
     """
 
-    _headers: dict[str, str] = {}
-    _refresh_access_token: Callable[[], None] = None
     _access_token_expired_message = 'AccessTokenExpired'  # nosec
 
     def __init__(
-            self, path_segment: str, session: requests.Session = None, resource_id: str | None =
-            None,
-            disabled_for_collection: bool = False,
-            refresh_access_token: Callable[[], None] = None,
-            parent: 'Endpoint | None' = None):
+            self, path_segment: str, disabled_for_collection: bool = False,
+            resource_id: str | None = None, session: requests.Session = None,
+            refresh_access_token: Callable[[], None] = None, parent: 'Endpoint | None' = None):
         """
-
-
         Parameters
         ----------
             path_segment
                 The path segment of the endpoint.
-            session
-                The session to use for the requests.
+            disabled_for_collection
+                If true, the endpoint will not be accessible if no resource id is provided.
             resource_id
                 The id of the resource that this endpoint represents. If it is none, the enpoint
                 represents a collection of resources.
+            session
+                The session to use for the requests.
+            refresh_access_token
+                A callable that, when executed, refreshes the access token.
             parent
                 The parent endpoint. If it is none, the endpoint is the root of the tree.
-            refresh_access_token
-                A callable that refreshes the access token.
-            disabled_for_collection
-                If true, the endpoint will not be accessible if no resource id is provided.
         """
         self._path_segment = path_segment
-        self.session = session
-        Endpoint._refresh_access_token = refresh_access_token
+        self._session = session
+        self._refresh_access_token = refresh_access_token
         self._resource_id = resource_id
         self._disabled_for_collection = disabled_for_collection
         self._parent = parent
@@ -71,10 +69,10 @@ class Endpoint(ABC):
                     'This endpoint is only available for a single resource, not for a collection')
             return type(self)(
                 path_segment=self._path_segment,
-                session=parent.session,
-                resource_id=None,
                 disabled_for_collection=self._disabled_for_collection,
-                refresh_access_token=self._refresh_access_token,
+                session=parent._session,
+                resource_id=self._resource_id,
+                refresh_access_token=parent._refresh_access_token,
                 parent=parent)
 
         return self
@@ -86,7 +84,7 @@ class Endpoint(ABC):
         """
         return type(self)(
             path_segment=self._path_segment,
-            session=self.session,
+            session=self._session,
             resource_id=resource_id,
             disabled_for_collection=self._disabled_for_collection,
             refresh_access_token=self._refresh_access_token,
@@ -125,7 +123,7 @@ class Endpoint(ABC):
 
             def execute_and_parse():
 
-                if not self.session:
+                if not self._session:
                     raise RuntimeError('Endpoints are not connected to the API')
 
                 response = func(self, *args, **kwargs)
@@ -159,28 +157,28 @@ class Endpoint(ABC):
     @_request_handler
     def _get(self, payload: dict = None, query_parameters: dict = None):
         """Send a GET request to the endpoint."""
-        return self.session.get(url=self.url, json=payload, params=query_parameters)
+        return self._session.get(url=self.url, json=payload, params=query_parameters)
 
     # noinspection PyArgumentList
     @_request_handler
     def _post(self, payload: dict = None, query_parameters: dict = None):
         """Send a POST request to the endpoint."""
-        return self.session.post(url=self.url, json=payload, params=query_parameters)
+        return self._session.post(url=self.url, json=payload, params=query_parameters)
 
     # noinspection PyArgumentList
     @_request_handler
     def _put(self, payload: dict = None, query_parameters: dict = None):
         """Send a PUT request to the endpoint."""
-        return self.session.put(url=self.url, json=payload, params=query_parameters)
+        return self._session.put(url=self.url, json=payload, params=query_parameters)
 
     # noinspection PyArgumentList
     @_request_handler
     def _patch(self, payload: dict = None, query_parameters: dict = None):
         """Send a PATCH request to the endpoint."""
-        return self.session.patch(url=self.url, json=payload, params=query_parameters)
+        return self._session.patch(url=self.url, json=payload, params=query_parameters)
 
     # noinspection PyArgumentList
     @_request_handler
     def _delete(self, payload: dict = None, query_parameters: dict = None):
         """Send a DELETE request to the endpoint."""
-        return self.session.delete(url=self.url, json=payload, params=query_parameters)
+        return self._session.delete(url=self.url, json=payload, params=query_parameters)
