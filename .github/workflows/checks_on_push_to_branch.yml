@@ -10,18 +10,9 @@ concurrency:
 
 permissions:
     contents: read
-    actions: read
+    issues: read
     checks: write
     pull-requests: write
-    id-token: write
-    deployments: write
-    issues: write
-    discussions: write
-    packages: write
-    pages: write
-    repository-projects: write
-    security-events: write
-    statuses: write
 
 jobs:
 
@@ -75,7 +66,7 @@ jobs:
 
       - name: Pytest
         if: success() || failure()
-        run: poetry run pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=boum tests/ | tee pytest-coverage.txt
+        run: poetry run pytest --junitxml=pytest.xml || [ $? = 1 ]
         env:
           BOUM_SDK_TEST_EMAIL: boum.sdk.test.user@boum.garden
           BOUM_SDK_TEST_PASSWORD: ${{ secrets.BOUM_SDK_TEST_PASSWORD}}
@@ -89,13 +80,6 @@ jobs:
         with:
           files: ./pytest.xml
           check_name: Pytest Results
-
-      - name: Comment pytest coverage report
-        if: success() || failure()
-        uses: MishaKav/pytest-coverage-comment@main
-        with:
-          pytest-coverage-path: ./pytest-coverage.txt
-          junitxml-path: ./pytest.xml
 
 
 
