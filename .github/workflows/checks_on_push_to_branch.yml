@@ -13,7 +13,7 @@ permissions:
   checks: write
   pull-requests: write
 
-# actions: write
+  actions: write
   deployments: write
   id-token: write
   issues: write
