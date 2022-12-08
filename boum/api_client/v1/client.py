@@ -68,7 +68,8 @@ class ApiClient:
         self.__access_token: str | None = None
 
         self._session = session
-        self.root = RootEndpoint(base_url + '/v1', refresh_access_token=self._refresh_access_token)
+        self.root = RootEndpoint(
+            base_url + '/v1', session=session, refresh_access_token=self._refresh_access_token)
 
     @property
     def _access_token(self) -> str | None:
@@ -81,7 +82,6 @@ class ApiClient:
 
     def __enter__(self) -> "ApiClient":
         """Connect to the API and sign in or refresh the access token."""
-        self.root.set_session(self._session)
         if self._access_token:
             pass
         elif self._refresh_token:
@@ -108,8 +108,8 @@ class ApiClient:
 class AuthTokenEndpoint(Endpoint):
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "AuthTokenEndpoint":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "AuthTokenEndpoint":
+        return super().__get__(parent, owner)
 
     def post(self, refresh_token: str):
         if not isinstance(refresh_token, str):
@@ -124,8 +124,8 @@ class AuthTokenEndpoint(Endpoint):
 class AuthSigninEndpoint(Endpoint):
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "AuthSigninEndpoint":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "AuthSigninEndpoint":
+        return super().__get__(parent, owner)
 
     def post(self, email: str, password: str):
         if not isinstance(email, str):
@@ -144,16 +144,16 @@ class AuthEndpoint(Endpoint):
     token = AuthTokenEndpoint('token')
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "AuthEndpoint":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "AuthEndpoint":
+        return super().__get__(parent, owner)
 
 
 class DevicesDataEndpoint(Endpoint):
     DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "DevicesDataEndpoint":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "DevicesDataEndpoint":
+        return super().__get__(parent, owner)
 
     def get(self, start: datetime = None, end: datetime = None, interval: timedelta = None):
         if self._parent.is_collection:
@@ -171,7 +171,7 @@ class DevicesDataEndpoint(Endpoint):
         if end:
             query_parameters['timeEnd'] = end.strftime(self.DATETIME_FORMAT)
         if interval:
-            interval_minutes = int(interval.total_seconds()/60)
+            interval_minutes = int(interval.total_seconds() / 60)
             query_parameters['interval'] = f'{interval_minutes}m'
 
         response = self._get(query_parameters=query_parameters)
@@ -181,8 +181,8 @@ class DevicesDataEndpoint(Endpoint):
 class DevicesClaimEndpoint(Endpoint):
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "DevicesClaimEndpoint":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "DevicesClaimEndpoint":
+        return super().__get__(parent, owner)
 
     def put(self):
         self._put()
@@ -198,8 +198,8 @@ class DevicesEndpoint(Endpoint):
     claim = DevicesClaimEndpoint('claim')
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "DevicesEndpoint":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "DevicesEndpoint":
+        return super().__get__(parent, owner)
 
     def post(self) -> str:
         if self.is_resource:
@@ -235,8 +235,8 @@ class DevicesEndpoint(Endpoint):
 class UsersEndpoint(Endpoint):
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "UsersEndpoint":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "UsersEndpoint":
+        return super().__get__(parent, owner)
 
     def get(self) -> UserModel:
         response = self._get()
@@ -250,5 +250,5 @@ class RootEndpoint(Endpoint):
     users = UsersEndpoint('users')
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "RootEndpoint":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "RootEndpoint":
+        return super().__get__(parent, owner)

@@ -10,30 +10,30 @@ from boum.api_client.v1.endpoint import Endpoint
 
 class EndpointAC(Endpoint):
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "EndpointAC":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "EndpointAC":
+        return super().__get__(parent, owner)
 
 
 class EndpointA(Endpoint):
     endpoint_c = EndpointAC('c')
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "EndpointA":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "EndpointA":
+        return super().__get__(parent, owner)
 
 
 class EndpointBD(Endpoint):
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "EndpointBD":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "EndpointBD":
+        return super().__get__(parent, owner)
 
 
 class EndpointB(Endpoint):
     endpoint_d = EndpointBD('d', disabled_for_collection=True)
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "EndpointB":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "EndpointB":
+        return super().__get__(parent, owner)
 
     def get(self):
         return self._get()
@@ -44,8 +44,8 @@ class EndpointRoot(Endpoint):
     endpoint_b = EndpointB('b')
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, instance, owner: type) -> "EndpointRoot":
-        return super().__get__(instance, owner)
+    def __get__(self, parent, owner: type) -> "EndpointRoot":
+        return super().__get__(parent, owner)
 
 
 def test__create_without_resource_where_enabled__urls_are_correct():
@@ -75,6 +75,5 @@ def test__create_with_resource_ids__urls_are_correct():
 def test__request_attempt_with_not_connected_endpoint__raises_runtime_error():
     root = EndpointRoot('base')
     # noinspection PyTypeChecker
-    root.set_session(None)
     with pytest.raises(RuntimeError):
         root.endpoint_b('1').get()
