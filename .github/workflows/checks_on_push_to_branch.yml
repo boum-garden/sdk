@@ -12,7 +12,7 @@ permissions:
     actions: read
     checks: write
     contents: read
-    deployments: read
+    deployments: write
     id-token: read
     issues: write
     discussions: write
