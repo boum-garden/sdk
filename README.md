@@ -1,5 +1,5 @@
 # Boum Python SDK
-Status: ![GitHub Actions](https://github.com/boum-garden/sdk/actions/workflows/main.yml/badge.svg)
+Status: ![GitHub Actions](https://github.com/boum-garden/sdk/actions/workflows/deploy_on_semver_tag.yml/badge.svg)
 
 ## Overview
 This project provides an api client to interact with the [Boum API](https://api.boum.us/swagger) and abstractions to 
