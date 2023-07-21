@@ -77,6 +77,22 @@ class Device:
         """
         return api_client.root.devices.get()
 
+    @staticmethod
+    def get_claimed_device_ids(api_client: ApiClient) -> list[str]:
+        """Get all claimed device ids
+
+        Parameters
+        ----------
+            api_client
+                The api client that handles the interaction with the api
+
+        Returns
+        -------
+            list[str]
+                The device ids
+        """
+        return api_client.root.devices.claimed.get()
+
     def set_desired_device_state(self, desired_device_state: DeviceStateModel):
         """
         Set the desired device state.

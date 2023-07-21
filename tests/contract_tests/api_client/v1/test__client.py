@@ -116,6 +116,13 @@ class TestDevicesClaimEndpoint:
         client.root.devices(DEVICE_ID).claim.delete()
         client.root.devices(DEVICE_ID).claim.put()
 
+class TestDevicesClaimedEndpoint:
+    
+    @pytest.mark.flaky(reruns=3)
+    def test__get_without_device_id__returns_list_with_claimed_device_id(self, client):
+        result = client.root.devices.claimed.get()
+        assert result == [DEVICE_ID]
+
 
 class TestUsersEndpoint:
 
