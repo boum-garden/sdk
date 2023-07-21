@@ -224,10 +224,25 @@ class DevicesClaimEndpoint(Endpoint):
             raise AttributeError('Cannot unclaim from a specific user')
         self._delete()
 
+class DevicesClaimedEndpoint(Endpoint):
+    # pylint: disable=useless-parent-delegation
+    def __get__(self, parent, owner: type) -> "DevicesClaimEndpoint":
+        return super().__get__(parent, owner)
+
+    def get(self) -> list[str] | DeviceModel:
+        response = self._get()
+        data = response.json()['data']
+        if self.is_collection:
+            return [d['id'] for d in data]
+
+        device_model = DeviceModel.from_payload(data)
+        return device_model
+
 
 class DevicesEndpoint(Endpoint):
     data = DevicesDataEndpoint('data')
     claim = DevicesClaimEndpoint('claim')
+    claimed = DevicesClaimedEndpoint('claimed')
 
     # pylint: disable=useless-parent-delegation
     def __get__(self, parent, owner: type) -> "DevicesEndpoint":
