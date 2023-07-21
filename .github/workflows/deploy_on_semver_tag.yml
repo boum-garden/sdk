@@ -56,8 +56,8 @@ jobs:
 
       - name: assert tag matches current version
         run: |
-          if [ ${{ steps.extract-vars.outputs.tag }} != ${{ steps.extract-vars.outputs.version }} ]; then
-            echo "Tag ${{ steps.extract-vars.outputs.tag }} does not match version ${{ steps.extract-vars.outputs.version }}"
+          if [ ${{ steps.extract-vars.outputs.tag }} != v${{ steps.extract-vars.outputs.version }} ]; then
+            echo "Tag ${{ steps.extract-vars.outputs.tag }} does not match version v${{ steps.extract-vars.outputs.version }}"
             exit 1
           fi
 
