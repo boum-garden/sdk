@@ -213,7 +213,7 @@ class DevicesDataEndpoint(Endpoint):
 class DevicesClaimEndpoint(Endpoint):
 
     # pylint: disable=useless-parent-delegation
-    def __get__(self, parent, owner: type) -> "DevicesClaimEndpoint":
+    def __get__(self, parent, owner: type) -> "DevicesClaimedEndpoint":
         return super().__get__(parent, owner)
 
     def put(self):
@@ -230,10 +230,12 @@ class DevicesClaimedEndpoint(Endpoint):
     def __get__(self, parent, owner: type) -> "DevicesClaimEndpoint":
         return super().__get__(parent, owner)
 
-    def get(self) -> list[str] | DeviceModel:
+    def get(self, include_details: bool = False) -> list[str | dict] | DeviceModel:
         response = self._get()
         data = response.json()['data']
         if self.is_collection:
+            if include_details:
+                return data
             return [d['id'] for d in data]
 
         device_model = DeviceModel.from_payload(data)
@@ -256,10 +258,12 @@ class DevicesEndpoint(Endpoint):
         data = response.json()['data']
         return data['deviceId']
 
-    def get(self) -> list[str] | DeviceModel:
+    def get(self, include_details: bool = False) -> list[str | dict] | DeviceModel:
         response = self._get()
         data = response.json()['data']
         if self.is_collection:
+            if include_details:
+                return data
             return [d['id'] for d in data]
 
         device_model = DeviceModel.from_payload(data)

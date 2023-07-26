@@ -92,7 +92,47 @@ class Device:
                 The device ids
         """
         return api_client.root.devices.claimed.get()
+    
+    @staticmethod
+    def get_device_details(api_client: ApiClient, 
+                           only_claimed: bool = False, 
+                           only_tested: bool = False, 
+                           sku_contains: str = '',
+                           created_after: datetime = None) -> list[dict]:
+        """Get details of all claimed devices
 
+        Parameters
+        ----------
+            api_client
+                The api client that handles the interaction with the api
+
+        Returns
+        -------
+            list[dict]
+                The device details
+        """
+        all_devices = api_client.root.devices.get(include_details=True)
+        claimed_devices = api_client.root.devices.claimed.get(include_details=True)
+        claimed_devices = {device['id']: device for device in claimed_devices}
+        device_details_list = []
+        for device in all_devices:
+            add_device = True
+            if only_claimed and device['id'] not in list(claimed_devices.keys()):
+                add_device = False
+            elif sku_contains and sku_contains not in device['sku']:
+                add_device = False
+            elif only_tested and 'hasBeenTested' in device:
+                if not device['hasBeenTested']:
+                    add_device = False
+            elif created_after and datetime.fromtimestamp(device['createdAt']['_seconds']) < created_after:
+                add_device = False
+            if add_device:
+                if only_claimed:
+                    device['claimedAt'] = datetime.fromtimestamp(claimed_devices[device['id']]['createdAt']['_seconds'])
+                    device['ownerId'] = claimed_devices[device['id']]['ownerId']
+                device_details_list.append(device)
+        return device_details_list
+    
     def set_desired_device_state(self, desired_device_state: DeviceStateModel):
         """
         Set the desired device state.
