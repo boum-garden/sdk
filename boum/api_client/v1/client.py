@@ -5,13 +5,13 @@ import requests
 
 from boum.api_client import constants
 from boum.api_client.v1.endpoint import Endpoint
-from boum.api_client.v1.models import DeviceModel, UserModel, DeviceDataModel
+from boum.api_client.v1.models import DeviceModel, UserModel, DeviceDataModel, DeviceLogModel
 
 
 class ApiClient:
     # noinspection PyUnresolvedReferences
     """
-        Client for the boum API v1.
+        Client for the Boum API v1.
 
         It is implemented as a context manager, so you can use it with
         the `with` statement. It will automatically connect and disconnect to the API. It will also
@@ -224,6 +224,19 @@ class DevicesClaimEndpoint(Endpoint):
             raise AttributeError('Cannot unclaim from a specific user')
         self._delete()
 
+class DevicesLogEndpoint(Endpoint):
+
+    # pylint: disable=useless-parent-delegation
+    def __get__(self, parent, owner: type) -> "DevicesLogEndpoint":
+        return super().__get__(parent, owner)
+
+    def post(self, device_log: DeviceLogModel):
+        if not isinstance(device_log, DeviceLogModel):
+            raise ValueError('device_log must be a DeviceLogModel')
+        payload = device_log.to_payload()
+        self._post(payload)
+
+
 class DevicesClaimedEndpoint(Endpoint):
 
     # pylint: disable=useless-parent-delegation
@@ -243,6 +256,7 @@ class DevicesClaimedEndpoint(Endpoint):
 
 
 class DevicesEndpoint(Endpoint):
+    log = DevicesLogEndpoint('log')
     data = DevicesDataEndpoint('data')
     claim = DevicesClaimEndpoint('claim')
     claimed = DevicesClaimedEndpoint('claimed')

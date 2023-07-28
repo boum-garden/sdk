@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from boum.api_client.v1.client import ApiClient
-from boum.api_client.v1.models import DeviceStateModel, DeviceModel
+from boum.api_client.v1.models import DeviceStateModel, DeviceModel, DeviceFlagsModel, DeviceLogModel
 
 
 class Device:
@@ -99,7 +99,7 @@ class Device:
                            only_tested: bool = False, 
                            sku_contains: str = '',
                            created_after: datetime = None) -> list[dict]:
-        """Get details of all claimed devices
+        """Filter devices and get their details
 
         Parameters
         ----------
@@ -142,7 +142,19 @@ class Device:
             desired_device_state
                 The desired device state
         """
-        device_model = DeviceModel(desired_device_state)
+        device_model = DeviceModel(desired_state=desired_device_state)
+        self._api_client.root.devices(self.device_id).patch(device_model)
+
+    def set_device_flags(self, flags: DeviceFlagsModel):
+        """
+        Set the device flags.
+
+        Parameters
+        ----------
+            flags
+                The device flags
+        """
+        device_model = DeviceModel(flags=flags)
         self._api_client.root.devices(self.device_id).patch(device_model)
 
     def get_device_states(self) -> (DeviceStateModel, DeviceStateModel):
@@ -155,6 +167,73 @@ class Device:
         """
         device_model = self._api_client.root.devices(self.device_id).get()
         return device_model.reported_state, device_model.desired_state
+
+    def get_device(self) -> DeviceModel:
+        """
+        Get the device.
+
+        Returns
+        -------
+            the device object
+        """
+        device_model = self._api_client.root.devices(self.device_id).get()
+        return device_model
+    
+    def get_device_flags(self) -> DeviceFlagsModel:
+        """
+        Get the device flags.
+
+        Returns
+        -------
+            the device flags
+        """
+        device_model = self._api_client.root.devices(self.device_id).get()
+        return device_model.flags
+    
+    def send_device_command(self, command: str):
+        """
+        Send a command to the device.
+
+        Parameters
+        ----------
+            command
+                The command to send
+        """
+        desired_device_state = DeviceStateModel(device_commands=[command])
+        device_model = DeviceModel(desired_state=desired_device_state)
+        self._api_client.root.devices(self.device_id).patch(device_model)
+
+    def send_device_log(self, 
+                        message: str, 
+                        type: str = 'default', 
+                        level: str = 'info', 
+                        payload: dict = {}, 
+                        firmware_version: str = None):
+        """
+        Send a device log.
+
+        Parameters
+        ----------
+            message
+                The log message
+            type
+                The log type
+            level
+                The log level
+            payload
+                The log payload
+            firmware_version
+                The firmware version
+        """
+        device_log = DeviceLogModel(
+            message=message, 
+            type=type, 
+            level=level, 
+            payload=payload, 
+            device_id=self.device_id,
+            firmware_version=firmware_version
+        )
+        self._api_client.root.devices(self.device_id).log.post(device_log)
 
     def get_telemetry_data(
             self, start: datetime = None, end: datetime = None,
