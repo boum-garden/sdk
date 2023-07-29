@@ -185,33 +185,33 @@ class DeviceStateModel(Model):
 
 @dataclass
 class DeviceFlagsModel(Model):
-    poor_us: bool | None = None
-    poor_wifi: bool | None = None
-    draws_air: bool | None = None
-    water_leakage: bool | None = None
-    low_battery: bool | None = None
-    slow_recharge: bool | None = None
-    high_water_usage: bool | None = None
-    low_water_usage: bool | None = None
+    poor_us: int | None = None
+    poor_wifi: int | None = None
+    draws_air: int | None = None
+    water_leakage: int | None = None
+    low_battery: int | None = None
+    slow_recharge: int | None = None
+    high_water_usage: int | None = None
+    low_water_usage: int | None = None
 
     def __post_init__(self):
         """Value validation after initialization"""
-        if not isinstance(self.poor_us, bool | None):
-            raise ValueError('poor_us must be a bool or None')
-        if not isinstance(self.poor_wifi, bool | None):
-            raise ValueError('poor_wifi must be a bool or None')
-        if not isinstance(self.draws_air, bool | None):
-            raise ValueError('draws_air must be a bool or None')
-        if not isinstance(self.water_leakage, bool | None):
-            raise ValueError('water_leakage must be a bool or None')
-        if not isinstance(self.low_battery, bool | None):
-            raise ValueError('low_battery must be a bool or None')
-        if not isinstance(self.slow_recharge, bool | None):
-            raise ValueError('slow_recharge must be a bool or None')
-        if not isinstance(self.high_water_usage, bool | None):
-            raise ValueError('high_water_usage must be a bool or None')
-        if not isinstance(self.low_water_usage, bool | None):
-            raise ValueError('low_water_usage must be a bool or None')
+        if not isinstance(self.poor_us, int | None):
+            raise ValueError('poor_us must be a int or None')
+        if not isinstance(self.poor_wifi, int | None):
+            raise ValueError('poor_wifi must be a int or None')
+        if not isinstance(self.draws_air, int | None):
+            raise ValueError('draws_air must be a int or None')
+        if not isinstance(self.water_leakage, int | None):
+            raise ValueError('water_leakage must be a int or None')
+        if not isinstance(self.low_battery, int | None):
+            raise ValueError('low_battery must be a int or None')
+        if not isinstance(self.slow_recharge, int | None):
+            raise ValueError('slow_recharge must be a int or None')
+        if not isinstance(self.high_water_usage, int | None):
+            raise ValueError('high_water_usage must be a int or None')
+        if not isinstance(self.low_water_usage, int | None):
+            raise ValueError('low_water_usage must be a int or None')
 
     def to_payload(self) -> dict[str, any]:
         payload = {}
