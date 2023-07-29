@@ -218,7 +218,7 @@ class DeviceFlagsModel(Model):
         if self.poor_us is not None:
             payload['poorUS'] = self.poor_us
         if self.poor_wifi is not None:
-            payload['poorWifi'] = self.poor_wifi
+            payload['poorWiFi'] = self.poor_wifi
         if self.draws_air is not None:
             payload['drawsAir'] = self.draws_air
         if self.water_leakage is not None:
@@ -237,7 +237,7 @@ class DeviceFlagsModel(Model):
     def from_payload(payload: dict[str, any]) -> 'DeviceFlagsModel':
         return DeviceFlagsModel(
             poor_us=payload.get('poorUS'),
-            poor_wifi=payload.get('poorWifi'),
+            poor_wifi=payload.get('poorWiFi'),
             draws_air=payload.get('drawsAir'),
             water_leakage=payload.get('waterLeakage'),
             low_battery=payload.get('lowBattery'),
