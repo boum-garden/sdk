@@ -121,8 +121,9 @@ class DeviceStateModel(Model):
             raise ValueError('max_pump_duration_minutes must be between 0 and 1439 or None')
         if not isinstance(self.pump_state, bool | None):
             raise ValueError('pump_state must be a bool or None')
-        if not isinstance(self.firmware_version, str | None) or not re.match(FIRMWARE_VERSION_REGEX, self.firmware_version):
-            raise ValueError('firmware_version must be a string and be in the format MAJOR.MINOR.PATCH')        
+        if not isinstance(self.firmware_version, str | None):
+            if isinstance(self.firmware_version, str) and not re.match(FIRMWARE_VERSION_REGEX, self.firmware_version):
+                raise ValueError('firmware_version must be a string and be in the format MAJOR.MINOR.PATCH')        
         if not isinstance(self.device_commands, list | None):
             for command in self.device_commands:
                 if not isinstance(command, str) or not command in DEVICE_COMMANDS:
