@@ -194,6 +194,7 @@ class DeviceFlagsModel(Model):
     slow_recharge: int | None = None
     high_water_usage: int | None = None
     low_water_usage: int | None = None
+    offline_warning: int | None = None
 
     def __post_init__(self):
         """Value validation after initialization"""
@@ -213,6 +214,8 @@ class DeviceFlagsModel(Model):
             raise ValueError('high_water_usage must be a int or None')
         if not isinstance(self.low_water_usage, int | None):
             raise ValueError('low_water_usage must be a int or None')
+        if not isinstance(self.offline_warning, int | None):
+            raise ValueError('offline_warning must be a int or None')
 
     def to_payload(self) -> dict[str, any]:
         payload = {}
@@ -232,6 +235,8 @@ class DeviceFlagsModel(Model):
             payload['highWaterUsage'] = self.high_water_usage
         if self.low_water_usage is not None:
             payload['lowWaterUsage'] = self.low_water_usage
+        if self.offline_warning is not None:
+            payload['offlineWarning'] = self.offline_warning
         return payload
 
     @staticmethod
@@ -244,7 +249,8 @@ class DeviceFlagsModel(Model):
             low_battery=payload.get('lowBattery'),
             slow_recharge=payload.get('slowRecharge'),
             high_water_usage=payload.get('highWaterUsage'),
-            low_water_usage=payload.get('lowWaterUsage')
+            low_water_usage=payload.get('lowWaterUsage'),
+            offline_warning=payload.get('offlineWarning')
         )
     
 
