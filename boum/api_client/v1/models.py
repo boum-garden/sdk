@@ -190,6 +190,7 @@ class DeviceFlagsModel(Model):
     poor_wifi: int | None = None
     draws_air: int | None = None
     water_leakage: int | None = None
+    water_level: int | None = None
     low_battery: int | None = None
     slow_recharge: int | None = None
     high_water_usage: int | None = None
@@ -206,6 +207,8 @@ class DeviceFlagsModel(Model):
             raise ValueError('draws_air must be a int or None')
         if not isinstance(self.water_leakage, int | None):
             raise ValueError('water_leakage must be a int or None')
+        if not isinstance(self.water_level, int | None):
+            raise ValueError('water_level must be a int or None')
         if not isinstance(self.low_battery, int | None):
             raise ValueError('low_battery must be a int or None')
         if not isinstance(self.slow_recharge, int | None):
@@ -227,6 +230,8 @@ class DeviceFlagsModel(Model):
             payload['drawsAir'] = self.draws_air
         if self.water_leakage is not None:
             payload['waterLeakage'] = self.water_leakage
+        if self.water_level is not None:
+            payload['waterLevel'] = self.water_level
         if self.low_battery is not None:
             payload['lowBattery'] = self.low_battery
         if self.slow_recharge is not None:
@@ -246,6 +251,7 @@ class DeviceFlagsModel(Model):
             poor_wifi=payload.get('poorWiFi'),
             draws_air=payload.get('drawsAir'),
             water_leakage=payload.get('waterLeakage'),
+            water_level=payload.get('waterLevel'),
             low_battery=payload.get('lowBattery'),
             slow_recharge=payload.get('slowRecharge'),
             high_water_usage=payload.get('highWaterUsage'),
